@@ -46,8 +46,10 @@ docker compose exec api bundle install
 
 ```bash
 docker compose exec api bundle exec rspec
+
 # ファイル指定                                                                     
-docker compose exec api bundle exec rspec spec/models/user_spec.rb                 
+docker compose exec api bundle exec rspec spec/models/user_spec.rb
+                 
 # 行番号まで指定（特定のテストだけ実行）                                           
 docker compose exec api bundle exec rspec spec/models/user_specrb:10
 ```
