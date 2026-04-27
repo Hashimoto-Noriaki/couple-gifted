@@ -1,0 +1,18 @@
+current directory: /Users/hashimotonoriaki/git/couple-gifted/backend/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+/Users/hashimotonoriaki/.rbenv/versions/3.3.8/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/hashimotonoriaki/git/couple-gifted/backend/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260427-15410-h0eivm sitelibdir\=./.gem.20260427-15410-h0eivm clean
+
+current directory: /Users/hashimotonoriaki/git/couple-gifted/backend/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260427-15410-h0eivm sitelibdir\=./.gem.20260427-15410-h0eivm
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+
+current directory: /Users/hashimotonoriaki/git/couple-gifted/backend/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260427-15410-h0eivm sitelibdir\=./.gem.20260427-15410-h0eivm install
+/usr/local/bin/ginstall -c -m 0755 websocket_mask.bundle ./.gem.20260427-15410-h0eivm
+
+current directory: /Users/hashimotonoriaki/git/couple-gifted/backend/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260427-15410-h0eivm sitelibdir\=./.gem.20260427-15410-h0eivm clean
