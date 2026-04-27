@@ -40,8 +40,9 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   gem "rspec-rails"
-  gem 'factory_bot_rails'
-  gem 'faker'
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "rubocop-rails-omakase"
 
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
@@ -54,5 +55,5 @@ group :development, :test do
 end
 
 group :test do
-  gem 'shoulda-matchers'
+  gem "shoulda-matchers"
 end
