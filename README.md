@@ -41,3 +41,9 @@ docker compose exec api bundle exec rails
 ```bash
 docker compose exec api bundle install
 ```
+
+### RSpecの実行コマンド
+
+```bash
+docker compose exec api bundle exec rspec
+```
