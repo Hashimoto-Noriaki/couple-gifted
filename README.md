@@ -49,7 +49,16 @@ docker compose exec api bundle exec rspec
 
 # ファイル指定                                                                     
 docker compose exec api bundle exec rspec spec/models/user_spec.rb
-                 
+
 # 行番号まで指定（特定のテストだけ実行）                                           
 docker compose exec api bundle exec rspec spec/models/user_specrb:10
+```
+
+### RuboCopの実行コマンド
+
+```bash
+# チェックのみ
+docker compose exec api bundle exec rubocop
+# 自動修正
+docker compose exec api bundle exec rubocop -a
 ```
