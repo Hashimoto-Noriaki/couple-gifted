@@ -26,7 +26,12 @@
 - レスポンスは必ずSerializerを通す
 - 認証必須のエンドポイントは before_action :authenticate_v1_user! を明示
 - エラーレスポンスは { error: "メッセージ" } で統一
-- HTTPステータスコード: 200 OK / 201 Created / 401 Unauthorized / 422 Unprocessable Entity / 500 Internal Server Error
+- HTTPステータスコード:
+  - 200 OK
+  - 201 Created
+  - 401 Unauthorized
+  - 422 Unprocessable Entity
+  - 500 Internal Server Error
 
 ## TDDの手順（この順番を必ず守る）
 
@@ -52,14 +57,6 @@
 4.「Specを通すControllerを実装して」
 5.「ロジックをServiceクラスに切り出して」
 
-## よく使うコマンド
-
-- bundle exec rspec                # 全テスト
-- bundle exec rspec spec/models    # モデルのみ
-- bundle exec rspec spec/requests  # APIのみ
-- bundle exec rubocop -A           # Lint自動修正
-- bundle exec rails db:migrate     # マイグレーション
-- bundle exec rails db:seed        # シードデータ投入
 
 ## やってはいけないこと
 

@@ -1,5 +1,12 @@
 # TDD(テスト駆動開発を採用)
 
+## 開発者向け
+
+Claude Code を使って開発する場合は CLAUDE.md を参照してください。
+
+- [CLAUDE.md](./CLAUDE.md) : プロジェクト全体の開発規約・Git ルール
+- [backend/CLAUDE.md](./backend/CLAUDE.md) : バックエンド固有の規約・TDD 手順・コマンド
+
 ## 環境構築
 
 ### Docker
@@ -45,7 +52,6 @@ docker compose exec api bundle install
 ### RSpecの実行コマンド
 
 ```bash
-docker compose exec api bundle exec rspec
 
 # ファイル指定                                                                     
 docker compose exec api bundle exec rspec spec/models/user_spec.rb
