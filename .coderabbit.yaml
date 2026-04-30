@@ -12,9 +12,9 @@ reviews:
     base_branches:
       - "develop"
   path_instructions:
-    - path: "backend/**"
+    - path: "backend/app/**"
       instructions: |
-        Ruby on Rails 8.0（APIモード）のコードをレビューしてください。
+        Ruby on Rails 8.0（APIモード）の実装ファイルをレビューしてください。
         以下の観点を重視してください：
 
         ## TDD
@@ -31,3 +31,14 @@ reviews:
         ## コード品質
         - RuboCopの規約に沿っているか確認する
         - 不要なコメントやデバッグコードが残っていないか確認する
+
+    - path: "backend/spec/**"
+      instructions: |
+        RSpecのテストファイルをレビューしてください。
+        以下の観点を重視してください：
+
+        ## テストの品質
+        - describeとcontextが適切に使い分けられているか
+        - テストケースが網羅的か（正常系・異常系・境界値）
+        - テストが独立して実行できるか（他のテストに依存していないか）
+        - FactoryBotのデータが最小限か
