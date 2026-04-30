@@ -10,6 +10,7 @@ reviews:
     enabled: true
     drafts: false
     base_branches:
+      - "master"
       - "develop"
   path_instructions:
     - path: "backend/app/**"
