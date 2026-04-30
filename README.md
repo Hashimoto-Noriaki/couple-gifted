@@ -52,6 +52,8 @@ docker compose exec api bundle install
 ### RSpecの実行コマンド
 
 ```bash
+# RSpecの実行
+docker compose exec api bundle exec rspec
 
 # ファイル指定                                                                     
 docker compose exec api bundle exec rspec spec/models/user_spec.rb
