@@ -40,7 +40,7 @@ http://localhost:3000
 ### 実行コマンド
 
 ```bash
-docker compose exec api bundle exec rails
+docker compose exec api bundle exec rails 〇〇
 ```
 
 - bundle install
@@ -59,7 +59,7 @@ docker compose exec api bundle exec rspec
 docker compose exec api bundle exec rspec spec/models/user_spec.rb
 
 # 行番号まで指定（特定のテストだけ実行）                                           
-docker compose exec api bundle exec rspec spec/models/user_specrb:10
+docker compose exec api bundle exec rspec spec/models/user_spec.rb:10
 ```
 
 ### RuboCopの実行コマンド
