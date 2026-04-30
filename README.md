@@ -11,15 +11,25 @@ Claude Code を使って開発する場合は CLAUDE.md を参照してくださ
 
 ## 環境構築
 
-### 起動・停止
+### 起動・終了
 
 ```bash
+# ビルド
 docker compose build
+
+# 起動
 docker compose up -d
+
+# 停止（コンテナ保持）
+docker compose stop
+
+# 終了（コンテナ・ネットワーク削除）
 docker compose down
 ```
 
 ### DB作成・マイグレーション
+
+`docker compose up -d` でコンテナを起動した後に実行してください。
 
 ```bash
 docker compose exec api bin/rails db:create
