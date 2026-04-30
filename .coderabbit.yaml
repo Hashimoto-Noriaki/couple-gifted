@@ -1,0 +1,44 @@
+language: "ja-JP"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "develop"
+  path_instructions:
+    - path: "backend/app/**"
+      instructions: |
+        Ruby on Rails 8.0（APIモード）の実装ファイルをレビューしてください。
+        以下の観点を重視してください：
+
+        ## TDD
+        - 実装ファイルに対応するSpecファイルが存在すること
+        - SpecなしでPRがマージされないよう指摘する
+
+        ## 設計
+        - Controllerは薄く保つ。ビジネスロジックはService・Modelに書く
+        - 責務が適切に分離されているか確認する
+
+        ## パフォーマンス
+        - N+1クエリが発生していないか確認する（includes, eager_loadの使用を推奨）
+
+        ## コード品質
+        - RuboCopの規約に沿っているか確認する
+        - 不要なコメントやデバッグコードが残っていないか確認する
+
+    - path: "backend/spec/**"
+      instructions: |
+        RSpecのテストファイルをレビューしてください。
+        以下の観点を重視してください：
+
+        ## テストの品質
+        - describeとcontextが適切に使い分けられているか
+        - テストケースが網羅的か（正常系・異常系・境界値）
+        - テストが独立して実行できるか（他のテストに依存していないか）
+        - FactoryBotのデータが最小限か
