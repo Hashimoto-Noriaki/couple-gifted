@@ -16,7 +16,11 @@ User        has_many :spot_reviews
 User        has_many :likes
 
 Spot        has_many :spot_reviews
+Spot        has_many :spot_tags
 Spot        has_many :tags, through: :spot_tags
+
+Tag         has_many :spot_tags
+Tag         has_many :spots, through: :spot_tags
 
 SpotReview  belongs_to :user
 SpotReview  belongs_to :spot

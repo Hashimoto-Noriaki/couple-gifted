@@ -11,7 +11,7 @@ CoupleGifted（カップルギフテッド）
 
 - サービス概要:   docs/overview.md
 - 機能一覧:       docs/features.md
-- データモデル:   docs/data_model.md
+- データモデル:   docs/model.md
 - API設計:        docs/api.md
 - 開発手順:       docs/development.md
 - チーム方針:     docs/team.md

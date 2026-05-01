@@ -4,6 +4,7 @@
 
 - feature/xxxx  機能追加
 - fix/xxxx      バグ修正
+- hotfix/xxxx   緊急バグ修正
 - refactor/xxxx リファクタ
 - docs/xxxx     ドキュメント
 - chore/xxxx    設定変更
@@ -12,6 +13,7 @@
 
 - feat:     新機能追加
 - fix:      バグ修正
+- hotfix:   緊急バグ修正
 - test:     テスト追加・修正
 - refactor: リファクタリング
 - docs:     ドキュメント更新
@@ -33,4 +35,4 @@
 ## PRルール
 
 - PRを出したらCodeRabbitのレビューを確認してからマージ
-- GitHub Actions（CI）でRSpecが通ることを確認してからマージ（後回し）
+- GitHub Actions（CI）でRSpecが通ることを確認してからマージ
