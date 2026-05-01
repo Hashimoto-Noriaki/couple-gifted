@@ -28,4 +28,7 @@ SpotReview  has_many :likes
 
 Like        belongs_to :user
 Like        belongs_to :spot_review
+
+SpotTag     belongs_to :spot
+SpotTag     belongs_to :tag
 ```
