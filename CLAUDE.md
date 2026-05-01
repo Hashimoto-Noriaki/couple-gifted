@@ -7,6 +7,15 @@ CoupleGifted（カップルギフテッド）
 「パートナーが喜ぶ」を軸に、デートスポット・プレゼント・コスメなど
 交際中から結婚後まで長く使えるサービス。
 
+## ドキュメント
+
+- サービス概要:   docs/overview.md
+- 機能一覧:       docs/features.md
+- データモデル:   docs/data_model.md
+- API設計:        docs/api.md
+- 開発手順:       docs/development.md
+- チーム方針:     docs/team.md
+
 ## MVP（現在開発中）
 
 デートスポット検索に特化。
