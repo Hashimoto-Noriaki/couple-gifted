@@ -6,4 +6,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
+
+  validates :nickname, presence: true
+  validates :gender, presence: true, inclusion: { in: %w[male female other] }
+  validates :relationship_status, presence: true, inclusion: { in: %w[dating married] }
 end
