@@ -3,6 +3,8 @@
 ## MVP モデル一覧
 
 User         email, password, nickname, gender, relationship_status
+             - gender: male / female / other
+             - relationship_status: dating / married
 Spot         name, address, lat, lng, google_place_id
 SpotReview   user_id, spot_id, rating, body, relationship_status_at_visit
 Like         user_id, spot_review_id
