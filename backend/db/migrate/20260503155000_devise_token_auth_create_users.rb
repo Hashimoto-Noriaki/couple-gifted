@@ -1,7 +1,7 @@
-class DeviseTokenAuthCreateUser　auths < ActiveRecord::Migration[8.1]
+class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[8.1]
   def change
     
-    create_table(:user　auths) do |t|
+    create_table(:users) do |t|
       ## Required
       t.string :provider, :null => false, :default => "email"
       t.string :uid, :null => false, :default => ""
@@ -33,6 +33,8 @@ class DeviseTokenAuthCreateUser　auths < ActiveRecord::Migration[8.1]
       t.string :nickname
       t.string :image
       t.string :email
+      t.string :gender
+      t.string :relationship_status
 
       ## Tokens
       t.json :tokens
@@ -40,10 +42,10 @@ class DeviseTokenAuthCreateUser　auths < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :user　auths, :email,                unique: true
-    add_index :user　auths, [:uid, :provider],     unique: true
-    add_index :user　auths, :reset_password_token, unique: true
-    add_index :user　auths, :confirmation_token,   unique: true
-    # add_index :user　auths, :unlock_token,         unique: true
+    add_index :users, :email,                unique: true
+    add_index :users, [:uid, :provider],     unique: true
+    add_index :users, :reset_password_token, unique: true
+    add_index :users, :confirmation_token,   unique: true
+    # add_index :users, :unlock_token,         unique: true
   end
 end
