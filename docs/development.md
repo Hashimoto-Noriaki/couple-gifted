@@ -25,12 +25,13 @@
 
 ## よく使うコマンド
 
-- docker compose exec api bundle exec rspec                # 全テスト
-- docker compose exec api bundle exec rspec spec/models    # モデルのみ
-- docker compose exec api bundle exec rspec spec/requests  # APIのみ
-- docker compose exec api bundle exec rubocop -A           # Lint自動修正
-- docker compose exec api rails db:migrate                 # マイグレーション
-- docker compose exec api rails db:seed                    # シードデータ投入
+- docker compose exec api bundle exec rspec                          # 全テスト
+- docker compose exec api bundle exec rspec spec/models              # モデルのみ
+- docker compose exec api bundle exec rspec spec/requests            # APIのみ
+- docker compose exec api bundle exec rubocop -A                     # Lint自動修正
+- docker compose exec api bundle exec rails db:migrate               # マイグレーション
+- docker compose exec api bundle exec rails db:seed                  # シードデータ投入
+- docker compose exec api bundle exec rails db:drop db:create db:migrate  # DBリセット（migration変更時）
 
 ## やってはいけないこと
 

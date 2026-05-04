@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :user do
-    email { Faker::Internet.unique.email }
+    sequence(:email) { |n| "user#{n}@example.com" }
     password { 'password123' }
     password_confirmation { 'password123' }
-    nickname { Faker::Name.name }
+    nickname { 'test_user' }
     gender { 'male' }
     relationship_status { 'dating' }
   end
