@@ -23,20 +23,16 @@ RSpec.describe 'Auth', type: :request do
       end
     end
 
+    shared_examples '必須項目不足で422を返す' do |missing_key|
+      it "#{missing_key} がないと登録に失敗する" do
+        post '/auth', params: valid_params.except(missing_key)
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
     context '必須項目が欠けている場合' do
-      it 'nicknameがないと登録に失敗する' do
-        post '/auth', params: valid_params.except(:nickname)
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'genderがないと登録に失敗する' do
-        post '/auth', params: valid_params.except(:gender)
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'relationship_statusがないと登録に失敗する' do
-        post '/auth', params: valid_params.except(:relationship_status)
-        expect(response).to have_http_status(:unprocessable_entity)
+      %i[nickname gender relationship_status].each do |missing_key|
+        include_examples '必須項目不足で422を返す', missing_key
       end
     end
   end
@@ -63,11 +59,11 @@ RSpec.describe 'Auth', type: :request do
   end
 
   describe 'DELETE /auth/sign_out（ログアウト）' do
-    let!(:user) { create(:user) }
-
-    before do
-      post '/auth/sign_in', params: { email: user.email, password: 'password123' }
-      @auth_headers = {
+    let(:password) { 'password123' }
+    let!(:user) { create(:user, password: password) }
+    let(:auth_headers) do
+      post '/auth/sign_in', params: { email: user.email, password: password }
+      {
         'access-token' => response.headers['access-token'],
         'client'       => response.headers['client'],
         'uid'          => response.headers['uid']
@@ -76,7 +72,7 @@ RSpec.describe 'Auth', type: :request do
 
     context '有効な認証ヘッダーの場合' do
       it 'ログアウトに成功する' do
-        delete '/auth/sign_out', headers: @auth_headers
+        delete '/auth/sign_out', headers: auth_headers
         expect(response).to have_http_status(:ok)
       end
     end
