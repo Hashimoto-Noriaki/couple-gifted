@@ -1,5 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe SpotReview, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'バリデーション' do
+    subject { build(:spot_review) }
+
+    it { should validate_presence_of(:rating) }
+    it { should validate_presence_of(:body) }
+    it { should validate_presence_of(:relationship_status_at_visit) }
+  end
+
+  describe 'アソシエーション' do
+    it { should belong_to(:user) }
+    it { should belong_to(:spot) }
+  end
 end
