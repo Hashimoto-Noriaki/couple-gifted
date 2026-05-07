@@ -10,9 +10,45 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_03_155000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_152022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "spot_reviews", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "rating"
+    t.string "relationship_status_at_visit"
+    t.bigint "spot_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["spot_id"], name: "index_spot_reviews_on_spot_id"
+    t.index ["user_id"], name: "index_spot_reviews_on_user_id"
+  end
+
+  create_table "spot_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "spot_id", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["spot_id"], name: "index_spot_tags_on_spot_id"
+    t.index ["tag_id"], name: "index_spot_tags_on_tag_id"
+  end
+
+  create_table "spots", force: :cascade do |t|
+    t.string "address", null: false
+    t.datetime "created_at", null: false
+    t.string "google_place_id", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["google_place_id"], name: "index_spots_on_google_place_id", unique: true
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.boolean "allow_password_change", default: false
@@ -40,4 +76,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_155000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
+
+  add_foreign_key "spot_reviews", "spots"
+  add_foreign_key "spot_reviews", "users"
+  add_foreign_key "spot_tags", "spots"
+  add_foreign_key "spot_tags", "tags"
 end
