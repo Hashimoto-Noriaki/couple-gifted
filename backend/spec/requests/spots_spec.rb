@@ -65,9 +65,15 @@ RSpec.describe 'Spots', type: :request do
     end
 
     context '存在しないスポットの場合' do
+      before { get '/api/v1/spots/0' }
+
       it '404を返す' do
-        get '/api/v1/spots/0'
         expect(response).to have_http_status(:not_found)
+      end
+
+      it 'エラーメッセージを返す' do
+        json = JSON.parse(response.body)
+        expect(json).to have_key('error')
       end
     end
   end
