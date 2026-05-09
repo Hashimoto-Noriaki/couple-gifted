@@ -3,9 +3,10 @@
 ## TDDの手順（この順番を必ず守る）
 
 1. Model Spec（バリデーション・アソシエーション）
-2. Request Spec（エンドポイントのテストを先に書く）
-3. Controller実装（テストを通す）
-4. 必要ならServiceクラスに切り出す
+2. Model実装（Specを通す）
+3. Request Spec（エンドポイントのテストを先に書く）
+4. Controller実装（Specを通す）
+5. 必要ならServiceクラスに切り出す
 
 ## Specの書き方
 
@@ -39,4 +40,4 @@
 - テストなしで実装しない
 - マジックナンバーをそのまま書かない（定数化する）
 - N+1クエリを放置しない（includesを使う）
-- fixturesを使う（FactoryBotを使う）
+- fixturesを使わない（FactoryBotを使う）

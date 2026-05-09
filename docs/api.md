@@ -2,26 +2,26 @@
 
 ## 認証
 
-POST   /api/v1/auth/sign_up
-POST   /api/v1/auth/sign_in
-DELETE /api/v1/auth/sign_out
+POST   /auth           # ユーザー登録（devise_token_auth）
+POST   /auth/sign_in
+DELETE /auth/sign_out
 
 ## スポット
 
-GET    /api/v1/spots           # ?tag=&area=&scene=
+GET    /api/v1/spots           # ?tag=&area=
 GET    /api/v1/spots/:id
 
-## タグ
+## タグ（未実装）
 
 GET    /api/v1/tags
 
-## 口コミ
+## 口コミ（未実装）
 
 GET    /api/v1/spots/:id/spot_reviews
 POST   /api/v1/spots/:id/spot_reviews   # 要認証
 DELETE /api/v1/spot_reviews/:id         # 要認証・本人のみ
 
-## いいね
+## いいね（未実装）
 
 POST   /api/v1/spot_reviews/:id/likes   # 要認証
 DELETE /api/v1/spot_reviews/:id/likes   # 要認証
