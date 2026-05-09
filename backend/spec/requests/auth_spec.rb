@@ -61,7 +61,7 @@ RSpec.describe 'Auth', type: :request do
   describe 'DELETE /auth/sign_out（ログアウト）' do
     let(:password) { 'password123' }
     let!(:user) { create(:user, password: password) }
-    let(:auth_headers) do
+    let!(:auth_headers) do
       post '/auth/sign_in', params: { email: user.email, password: password }
       {
         'access-token' => response.headers['access-token'],
