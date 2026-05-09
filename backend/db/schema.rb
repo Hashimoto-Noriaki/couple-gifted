@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_152022) do
     t.datetime "updated_at", null: false
     t.index ["spot_id"], name: "index_spot_tags_on_spot_id"
     t.index ["tag_id"], name: "index_spot_tags_on_tag_id"
+    t.index ["spot_id", "tag_id"], name: "index_spot_tags_on_spot_id_and_tag_id", unique: true
   end
 
   create_table "spots", force: :cascade do |t|
