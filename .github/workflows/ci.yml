@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.8
+          bundler-cache: true
+          working-directory: backend
+
+      - name: データベース作成・マイグレーション
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/couple_gifted_test
+        run: bundle exec rails db:create db:migrate
+
+      - name: RSpec実行
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/couple_gifted_test
+        run: bundle exec rspec
+
+  rubocop:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.8
+          bundler-cache: true
+          working-directory: backend
+
+      - name: RuboCop実行
+        run: bundle exec rubocop

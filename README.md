@@ -58,6 +58,14 @@ docker compose exec api bundle exec rspec spec/models/user_spec.rb
 docker compose exec api bundle exec rspec spec/models/user_spec.rb:10
 ```
 
+### テストDB リセット
+
+マイグレーション追加後やテストDBが壊れたときに使用します。
+
+```bash
+docker compose exec -e RAILS_ENV=test api bin/rails db:drop db:create db:migrate
+```
+
 ### RuboCop
 
 ```bash

@@ -32,10 +32,6 @@
 - CodeRabbit     PR自動レビュー
 - CLAUDE.md      チームのルール・規約をAIに読ませる
 
-### References
-
-- [AI駆動開発では、Ruby on Railsが最強な理由(Rubyはオワコンではない💪)](https://qiita.com/Hashimoto-Noriaki/items/fc938cecd5c086c5325c)
-
 ## PRルール
 
 - PRを出したらCodeRabbitのレビューを確認してからマージ
