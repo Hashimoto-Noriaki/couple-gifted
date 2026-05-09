@@ -3,7 +3,7 @@ module Api
     class SpotsController < ApplicationController
       def index
         spots = Spot.all
-        spots = spots.joins(:tags).where(tags: { name: params[:tag] }) if params[:tag].present?
+        spots = spots.joins(:tags).where(tags: { name: params[:tag] }).distinct if params[:tag].present?
         spots = spots.where("address LIKE ?", "%#{params[:area]}%") if params[:area].present?
         render json: SpotSerializer.new(spots).serializable_hash
       end
