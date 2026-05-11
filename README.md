@@ -83,7 +83,7 @@ docker compose exec api bundle exec rubocop -a
 cd frontend && pnpm install
 
 # 開発サーバー起動（http://localhost:3001）
-pnpm dev
+cd frontend && pnpm dev
 ```
 
 ### Biome（Lint / Format）
@@ -92,12 +92,12 @@ pnpm dev
 # Lint チェック
 cd frontend && pnpm lint
 
-# フォーマット
+# フォーマット（自動修正）
 cd frontend && pnpm format
 
 # Lint + Format まとめてチェック（CI 用）
-cd frontend && pnpm biome check .
+cd frontend && pnpm exec biome check .
 
-# 自動修正
-cd frontend && pnpm biome check --write .
+# Lint + Format まとめて自動修正
+cd frontend && pnpm exec biome check --write .
 ```

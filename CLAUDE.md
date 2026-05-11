@@ -53,10 +53,10 @@ CoupleGifted（カップルギフテッド）
 
 ## よく使うコマンド（フロントエンド）
 
-- cd frontend && pnpm lint              # Biome Lint チェック
-- cd frontend && pnpm format            # Biome フォーマット
-- cd frontend && pnpm biome check .     # Lint + Format まとめてチェック
-- cd frontend && pnpm biome check --write .  # 自動修正
+- cd frontend && pnpm lint                        # Biome Lint チェック
+- cd frontend && pnpm format                      # Biome フォーマット（自動修正）
+- cd frontend && pnpm exec biome check .          # Lint + Format まとめてチェック
+- cd frontend && pnpm exec biome check --write .  # Lint + Format まとめて自動修正
 
 ## 使用ツール
 
