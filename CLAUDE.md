@@ -29,7 +29,7 @@ CoupleGifted（カップルギフテッド）
 ## リポジトリ構成
 
 - backend/  : Ruby on Rails 8.0（API mode）← 現在開発中
-- frontend/ : 未着手
+- frontend/ : Next.js（未着手）
 
 ## 開発の大原則
 
@@ -51,6 +51,13 @@ CoupleGifted（カップルギフテッド）
 - docker compose down              # コンテナ停止
 - docker compose logs -f api       # ログ確認
 
+## よく使うコマンド（フロントエンド）
+
+- cd frontend && pnpm lint              # Biome Lint チェック
+- cd frontend && pnpm format            # Biome フォーマット
+- cd frontend && pnpm biome check .     # Lint + Format まとめてチェック
+- cd frontend && pnpm biome check --write .  # 自動修正
+
 ## 使用ツール
 
 - Claude Code    : AI駆動開発（ターミナル・VSCode両方）
@@ -59,6 +66,5 @@ CoupleGifted（カップルギフテッド）
 
 ## 未定事項（決まり次第追記）
 
-- フロントエンドフレームワーク（Next.js / Nuxt.js）
 - frontend/ のディレクトリ構成
 - デプロイ先（未定）
