@@ -75,3 +75,29 @@ docker compose exec api bundle exec rubocop
 # 自動修正
 docker compose exec api bundle exec rubocop -a
 ```
+
+## フロントエンド（Next.js）
+
+```bash
+# 依存パッケージのインストール
+cd frontend && pnpm install
+
+# 開発サーバー起動（http://localhost:3001）
+cd frontend && pnpm dev
+```
+
+### Biome（Lint / Format）
+
+```bash
+# Lint チェック
+cd frontend && pnpm lint
+
+# フォーマット（自動修正）
+cd frontend && pnpm format
+
+# Lint + Format まとめてチェック（CI 用）
+cd frontend && pnpm exec biome check .
+
+# Lint + Format まとめて自動修正
+cd frontend && pnpm exec biome check --write .
+```
