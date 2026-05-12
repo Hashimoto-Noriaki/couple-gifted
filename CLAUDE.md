@@ -57,6 +57,8 @@ CoupleGifted（カップルギフテッド）
 - cd frontend && pnpm format                      # Biome フォーマット（自動修正）
 - cd frontend && pnpm exec biome check .          # Lint + Format まとめてチェック
 - cd frontend && pnpm exec biome check --write .  # Lint + Format まとめて自動修正
+- cd frontend && pnpm storybook                   # Storybook 開発サーバー起動（port 6006）
+- cd frontend && pnpm build-storybook             # Storybook 本番ビルド
 
 ## 使用ツール
 
