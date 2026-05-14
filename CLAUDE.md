@@ -39,6 +39,11 @@ CoupleGifted（カップルギフテッド）
 - N+1クエリを放置しない
 - 必ずRuboCopをPR前に使う
 
+## API スキーマ管理
+
+- スキーマファーストで進める。エンドポイントを追加・変更するときは先に `api/openapi.yaml` を更新する
+- 実装後にスキーマを書くのは禁止（ドキュメントと実装のズレを防ぐため）
+
 ## Gitルール
 
 - ブランチ: feature/ fix/ hotfix/ refactor/ docs/ chore/

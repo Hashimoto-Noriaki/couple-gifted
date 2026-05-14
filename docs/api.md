@@ -26,6 +26,11 @@ DELETE /api/v1/spot_reviews/:id         # 要認証・本人のみ
 POST   /api/v1/spot_reviews/:id/likes   # 要認証
 DELETE /api/v1/spot_reviews/:id/likes   # 要認証
 
+## スキーマ管理
+
+- `api/openapi.yaml` で OpenAPI 3.0 形式で管理する
+- スキーマファーストで進める。エンドポイントを追加・変更するときは先にスキーマを更新する
+
 ## 規約
 
 - エンドポイントは /api/v1/ から始める
