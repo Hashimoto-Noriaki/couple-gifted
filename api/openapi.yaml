@@ -7,6 +7,8 @@ info:
 servers:
   - url: http://localhost:3000
     description: ローカル開発環境
+  - url: https://api.couplegifted.com
+    description: 本番環境（※未デプロイ・URL未確定）
 
 tags:
   - name: auth
@@ -149,7 +151,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: スポット詳細
@@ -169,14 +171,22 @@ components:
       type: apiKey
       in: header
       name: access-token
-      description: devise_token_auth。access-token / client / uid の3ヘッダーが必要
+      description: |
+        devise_token_auth による認証。
+        注意: 実際のリクエストには以下の3つのヘッダーすべてが必要です:
+        - access-token (このスキーマで検証)
+        - client
+        - uid
+        OpenAPI の制限により、スキーマでは access-token のみ定義しています。
 
   schemas:
     UserResponse:
       type: object
+      required: [data]
       properties:
         data:
           type: object
+          required: [id, email, nickname]
           properties:
             id:
               type: integer
@@ -191,6 +201,7 @@ components:
 
     SpotData:
       type: object
+      required: [id, type, attributes]
       properties:
         id:
           type: string
@@ -199,6 +210,7 @@ components:
           example: spot
         attributes:
           type: object
+          required: [name]
           properties:
             name:
               type: string
