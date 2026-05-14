@@ -34,6 +34,29 @@
 - docker compose exec api bundle exec rails db:seed                  # シードデータ投入
 - docker compose exec api bundle exec rails db:drop db:create db:migrate  # DBリセット（migration変更時）
 
+## フロントエンドのテスト（Vitest）
+
+テストファイルは `*.test.tsx` として対象コンポーネントの隣に配置する。
+
+### コマンド
+
+```bash
+# ウォッチモード（開発中）
+cd frontend && pnpm test
+
+# 一回実行して終了（CI用）
+cd frontend && pnpm test run
+
+# UIモード（ブラウザでテスト結果確認）
+cd frontend && pnpm test:ui
+```
+
+### 構成
+
+- テストフレームワーク: Vitest + jsdom
+- DOMアサーション: @testing-library/jest-dom
+- コンポーネント操作: @testing-library/react
+
 ## やってはいけないこと
 
 - Controllerにビジネスロジックを書かない

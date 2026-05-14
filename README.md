@@ -86,6 +86,16 @@ cd frontend && pnpm install
 cd frontend && pnpm dev
 ```
 
+### Vitest（フロントエンドテスト）
+
+```bash
+# ウォッチモード（開発中）
+cd frontend && pnpm test
+
+# 一回実行して終了（CI用）
+cd frontend && pnpm test run
+```
+
 ### Biome（Lint / Format）
 
 ```bash
