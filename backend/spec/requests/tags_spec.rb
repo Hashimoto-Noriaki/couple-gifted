@@ -23,5 +23,16 @@ RSpec.describe 'Tags', type: :request do
       names = JSON.parse(response.body)['data'].map { |tag| tag['attributes']['name'] }
       expect(names).to contain_exactly('記念日', '初デート')
     end
+
+    context 'タグが存在しない場合' do
+      before do
+        Tag.delete_all
+        get '/api/v1/tags'
+      end
+
+      it '空配列を返す' do
+        expect(JSON.parse(response.body)['data']).to eq([])
+      end
+    end
   end
 end
