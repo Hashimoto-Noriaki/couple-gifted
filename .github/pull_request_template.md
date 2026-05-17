@@ -19,5 +19,5 @@
 ## チェックリスト
 
 - [ ] APIのエンドポイントを追加・変更した場合、`api/openapi.yaml` を更新した
-- [ ] RuboCop を実行した（バックエンド変更時）
+- [ ] `bundle exec rubocop -A` を実行した（バックエンド変更時）
 - [ ] `pnpm exec biome check .` を実行した（フロントエンド変更時）

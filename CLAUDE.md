@@ -10,7 +10,7 @@ CoupleGifted（カップルギフテッド）
 ## リポジトリ構成
 
 - backend/  : Ruby on Rails 8.0（API mode）
-- frontend/ : Next.js
+- frontend/ : Next.js 16.2
 - api/       : OpenAPI スキーマ（openapi.yaml）
 
 ## ドキュメント
@@ -28,7 +28,7 @@ CoupleGifted（カップルギフテッド）
 - TDDで開発する。Specを先に書いてから実装する
 - Controllerは薄く。ロジックはService・Modelに書く
 - N+1クエリを放置しない
-- スキーマファーストで進める。エンドポイントを追加・変更するときは先に `api/openapi.yaml` を更新する
+- スキーマファーストで進める。エンドポイントを追加・変更するときは先に `docs/api.md` でエンドポイントを定義し、`api/openapi.yaml` を更新する
 
 ## Gitルール
 
