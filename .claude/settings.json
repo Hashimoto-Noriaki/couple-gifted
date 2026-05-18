@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose exec api bundle exec rspec*)",
+      "Bash(docker compose exec api bundle exec rubocop*)",
+      "Bash(docker compose exec api bundle exec rails*)",
+      "Bash(docker compose exec api bundle exec rake*)",
+      "Bash(cd frontend && pnpm*)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git branch*)"
+    ],
+    "deny": [
+      "Bash(git push -f*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git checkout .)",
+      "Bash(git restore .)",
+      "Bash(rm -rf*)",
+      "Bash(docker compose exec api bundle exec rails db:drop*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(config/master.key)",
+      "Read(config/credentials.yml.enc)",
+      "Read(*.pem)",
+      "Read(*id_rsa*)",
+      "Read(*id_ed25519*)"
+    ]
+  }
+}
