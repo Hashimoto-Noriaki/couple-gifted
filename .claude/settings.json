@@ -10,7 +10,8 @@
       "Bash(git diff*)",
       "Bash(git log*)",
       "Bash(git add*)",
-      "Bash(git branch*)"
+      "Bash(git branch*)",
+      "Bash(git commit*)"
     ],
     "deny": [
       "Bash(git push -f*)",
@@ -20,9 +21,18 @@
       "Bash(git checkout .)",
       "Bash(git restore .)",
       "Bash(rm -rf*)",
+      "Bash(rm -fr*)",
+      "Bash(rm -r *)",
       "Bash(docker compose exec api bundle exec rails db:drop*)",
+      "Bash(docker compose exec api bundle exec rails db:reset*)",
+      "Bash(docker compose exec api bundle exec rails db:migrate:reset*)",
+      "Bash(docker compose exec api bundle exec rake db:drop*)",
+      "Bash(docker compose exec api bundle exec rake db:reset*)",
+      "Bash(docker compose exec api bundle exec rake db:migrate:reset*)",
       "Read(.env)",
       "Read(.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
       "Read(config/master.key)",
       "Read(config/credentials.yml.enc)",
       "Read(*.pem)",
