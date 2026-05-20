@@ -22,6 +22,7 @@ GET    /api/v1/tags
 指定スポットの口コミ一覧を取得する。認証不要。
 
 **レスポンス 200:**
+
 ```json
 {
   "data": [
@@ -41,12 +42,15 @@ GET    /api/v1/tags
 ```
 
 **エラー:**
+
 - 404: スポットが存在しない
 
 ### POST /api/v1/spots/:id/spot_reviews（未実装）
+
 要認証
 
 ### DELETE /api/v1/spot_reviews/:id（未実装）
+
 要認証・本人のみ
 
 ## いいね（未実装）

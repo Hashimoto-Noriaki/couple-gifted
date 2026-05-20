@@ -1,8 +1,22 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-rubocop.sh \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(docker compose exec api bundle exec rspec*)",
       "Bash(docker compose exec api bundle exec rubocop*)",
+      "Bash(docker compose exec -T api bundle exec rubocop*)",
       "Bash(docker compose exec api bundle exec rails*)",
       "Bash(docker compose exec api bundle exec rake*)",
       "Bash(cd frontend && pnpm*)",
