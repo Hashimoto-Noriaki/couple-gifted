@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write",
     "storybook": "storybook dev -p 6006",
