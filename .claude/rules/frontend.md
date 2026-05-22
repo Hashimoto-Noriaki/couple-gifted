@@ -9,6 +9,7 @@
 
 ## コマンド
 
+- `pnpm run type-check`（型チェック）
 - `pnpm exec biome check .`（リント）
 - `pnpm test`（ウォッチモード）
 - `pnpm test run`（CI 用）

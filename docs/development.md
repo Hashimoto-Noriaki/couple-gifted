@@ -52,6 +52,9 @@
 ### コマンド
 
 ```bash
+# 型チェック（CI用）
+cd frontend && pnpm run type-check
+
 # ウォッチモード（開発中）
 cd frontend && pnpm test
 

@@ -96,6 +96,12 @@ cd frontend && pnpm test
 cd frontend && pnpm test run
 ```
 
+### 型チェック
+
+```bash
+cd frontend && pnpm run type-check
+```
+
 ### Biome（Lint / Format）
 
 ```bash
