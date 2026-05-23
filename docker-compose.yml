@@ -28,6 +28,15 @@ services:
       DATABASE_URL: postgresql://postgres:password@db:5432/couple_gifted_development
       BUNDLE_WITHOUT: ""
 
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api/openapi.yaml:/openapi.yaml
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+
 volumes:
   postgres_data:
   bundle_data:
