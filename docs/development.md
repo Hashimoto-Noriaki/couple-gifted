@@ -35,6 +35,17 @@
 4.「Specを通すControllerを実装して」
 5.「ロジックをServiceクラスに切り出して」
 
+## Swagger UI
+
+`api/openapi.yaml` をブラウザで確認できる。
+
+```bash
+# 起動（http://localhost:8080）
+docker compose up -d swagger
+```
+
+`openapi.yaml` を更新した場合はブラウザをリロードするだけで反映される。
+
 ## よく使うコマンド
 
 - docker compose exec api bundle exec rspec                          # 全テスト

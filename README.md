@@ -76,6 +76,13 @@ docker compose exec api bundle exec rubocop
 docker compose exec api bundle exec rubocop -a
 ```
 
+## Swagger UI
+
+```bash
+# 起動（http://localhost:8080）
+docker compose up -d swagger
+```
+
 ## フロントエンド（Next.js）
 
 ```bash
