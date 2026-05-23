@@ -29,7 +29,7 @@ services:
       BUNDLE_WITHOUT: ""
 
   swagger:
-    image: swaggerapi/swagger-ui
+    image: swaggerapi/swagger-ui:v5.32.6
     ports:
       - "8080:8080"
     volumes:
