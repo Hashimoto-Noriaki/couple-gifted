@@ -1,0 +1,308 @@
+openapi: "3.0.3"
+
+info:
+  title: CoupleGifted API
+  version: "1.0"
+
+servers:
+  - url: http://localhost:3000
+    description: ローカル開発環境
+  - url: https://api.couplegifted.com
+    description: 本番環境（※未デプロイ・URL未確定）
+
+tags:
+  - name: auth
+    description: 認証
+  - name: spots
+    description: デートスポット
+  - name: spot_reviews
+    description: 口コミ
+
+paths:
+  /auth:
+    post:
+      tags: [auth]
+      summary: ユーザー登録
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, password_confirmation, nickname]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                password_confirmation:
+                  type: string
+                nickname:
+                  type: string
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                relationship_status:
+                  type: string
+                  enum: [dating, married]
+      responses:
+        "200":
+          description: 登録成功
+          headers:
+            access-token:
+              schema:
+                type: string
+            client:
+              schema:
+                type: string
+            uid:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /auth/sign_in:
+    post:
+      tags: [auth]
+      summary: ログイン
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: ログイン成功
+          headers:
+            access-token:
+              schema:
+                type: string
+            client:
+              schema:
+                type: string
+            uid:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/sign_out:
+    delete:
+      tags: [auth]
+      summary: ログアウト
+      security:
+        - tokenAuth: []
+      responses:
+        "200":
+          description: ログアウト成功
+        "404":
+          description: セッションが存在しない
+
+  /api/v1/spots:
+    get:
+      tags: [spots]
+      summary: スポット一覧取得
+      parameters:
+        - name: tag
+          in: query
+          schema:
+            type: string
+          description: タグ名でフィルタ（例：記念日）
+        - name: area
+          in: query
+          schema:
+            type: string
+          description: エリア名でフィルタ（例：渋谷）
+      responses:
+        "200":
+          description: スポット一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SpotData"
+
+  /api/v1/spots/{id}:
+    get:
+      tags: [spots]
+      summary: スポット詳細取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: スポット詳細
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SpotData"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/spots/{id}/spot_reviews:
+    get:
+      tags: [spot_reviews]
+      summary: 口コミ一覧取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: スポットID
+      responses:
+        "200":
+          description: 口コミ一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SpotReviewData"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: access-token
+      description: |
+        devise_token_auth による認証。
+        注意: 実際のリクエストには以下の3つのヘッダーすべてが必要です:
+        - access-token (このスキーマで検証)
+        - client
+        - uid
+        OpenAPI の制限により、スキーマでは access-token のみ定義しています。
+
+  schemas:
+    UserResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [id, email, nickname]
+          properties:
+            id:
+              type: integer
+            email:
+              type: string
+            nickname:
+              type: string
+            gender:
+              type: string
+            relationship_status:
+              type: string
+
+    SpotData:
+      type: object
+      required: [id, type, attributes]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: spot
+        attributes:
+          type: object
+          required: [name]
+          properties:
+            name:
+              type: string
+            address:
+              type: string
+            lat:
+              type: number
+              format: float
+            lng:
+              type: number
+              format: float
+            google_place_id:
+              type: string
+
+    SpotReviewData:
+      type: object
+      required: [id, type, attributes]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: spot_review
+        attributes:
+          type: object
+          required: [rating, body, relationship_status_at_visit, created_at, user_nickname]
+          properties:
+            rating:
+              type: integer
+              minimum: 1
+              maximum: 5
+            body:
+              type: string
+            relationship_status_at_visit:
+              type: string
+              enum: [dating, married]
+            created_at:
+              type: string
+              format: date-time
+            user_nickname:
+              type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+  responses:
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    UnprocessableEntity:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

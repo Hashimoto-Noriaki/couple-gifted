@@ -1,0 +1,57 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-rubocop.sh \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(docker compose exec api bundle exec rspec*)",
+      "Bash(docker compose exec api bundle exec rubocop*)",
+      "Bash(docker compose exec -T api bundle exec rubocop*)",
+      "Bash(docker compose exec api bundle exec rails*)",
+      "Bash(docker compose exec api bundle exec rake*)",
+      "Bash(cd frontend && pnpm*)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git branch*)",
+      "Bash(git commit*)"
+    ],
+    "deny": [
+      "Bash(git push -f*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git checkout .)",
+      "Bash(git restore .)",
+      "Bash(rm -rf*)",
+      "Bash(rm -fr*)",
+      "Bash(rm -r *)",
+      "Bash(docker compose exec api bundle exec rails db:drop*)",
+      "Bash(docker compose exec api bundle exec rails db:reset*)",
+      "Bash(docker compose exec api bundle exec rails db:migrate:reset*)",
+      "Bash(docker compose exec api bundle exec rake db:drop*)",
+      "Bash(docker compose exec api bundle exec rake db:reset*)",
+      "Bash(docker compose exec api bundle exec rake db:migrate:reset*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(config/master.key)",
+      "Read(config/credentials.yml.enc)",
+      "Read(*.pem)",
+      "Read(*id_rsa*)",
+      "Read(*id_ed25519*)"
+    ]
+  }
+}
