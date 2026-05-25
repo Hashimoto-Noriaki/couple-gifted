@@ -82,6 +82,30 @@ cd frontend && pnpm test:ui
 - DOMアサーション: @testing-library/jest-dom
 - コンポーネント操作: @testing-library/react
 
+## E2Eテスト（Playwright）
+
+テストファイルは `frontend/e2e/*.spec.ts` に置く。
+
+### E2Eコマンド
+
+```bash
+# 実行（dev サーバーを自動起動）
+cd frontend && pnpm test:e2e
+
+# インタラクティブUIモード
+cd frontend && pnpm test:e2e:ui
+
+# テストレポートを開く
+cd frontend && pnpm test:e2e:report
+```
+
+### E2E構成
+
+- テストフレームワーク: Playwright
+- ブラウザ: Chromium
+- baseURL: `http://localhost:3001`（Rails API の 3000 番と衝突しないよう固定）
+- `webServer` 設定により `pnpm dev --port 3001` を自動起動
+
 ## やってはいけないこと
 
 - Controllerにビジネスロジックを書かない
