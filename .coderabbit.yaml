@@ -1,4 +1,8 @@
 language: "ja-JP"
+tone_instructions: "レビューコメントは日本語で、具体的かつ建設的に記述してください。"
+early_access: false
+enable_free_tier: true
+inheritance: false
 
 reviews:
   profile: "assertive"
@@ -43,3 +47,70 @@ reviews:
         - テストケースが網羅的か（正常系・異常系・境界値）
         - テストが独立して実行できるか（他のテストに依存していないか）
         - FactoryBotのデータが最小限か
+
+    - path: "frontend/src/**"
+      instructions: |
+        Next.js 16.2 / TypeScript / Tailwind CSS の実装ファイルをレビューしてください。
+        以下の観点を重視してください：
+
+        ## 型安全性
+        - `any` 型の使用を避け、適切な型定義がされているか
+        - API レスポンスの型が openapi.yaml のスキーマと一致しているか
+
+        ## コンポーネント設計
+        - Server Component / Client Component の使い分けが適切か
+        - `"use client"` が必要最小限のコンポーネントにのみ付いているか
+        - props の型定義が明示されているか
+
+        ## パフォーマンス
+        - 不要な再レンダリングが発生しないか（useCallback / useMemo の適切な使用）
+        - `next/image` や `next/link` が正しく使われているか
+
+        ## コード品質
+        - Biome の規約に沿っているか
+        - 不要な console.log やデバッグコードが残っていないか
+
+    - path: "frontend/e2e/**"
+      instructions: |
+        Playwright の E2E テストをレビューしてください。
+        以下の観点を重視してください：
+
+        ## テストの品質
+        - ユーザー視点の操作フロー（クリック・入力・画面遷移）が検証されているか
+        - `page.waitForSelector` より `expect(locator).toBeVisible()` を使っているか
+        - テストが独立して実行できるか（前のテスト結果に依存していないか）
+        - セレクタが壊れやすい CSS クラスでなく `data-testid` やロールを使っているか
+
+    - path: "frontend/**/*.stories.tsx"
+      instructions: |
+        Storybook のストーリーファイルをレビューしてください。
+        以下の観点を重視してください：
+
+        - 正常系・エラー系・ローディング状態など主要なバリエーションが揃っているか
+        - args の型がコンポーネントの props と一致しているか
+        - ストーリー名がユーザーが理解しやすい命名になっているか
+
+    - path: "api/openapi.yaml"
+      instructions: |
+        OpenAPI スキーマの変更をレビューしてください。
+        以下の観点を重視してください：
+
+        - HTTP ステータスコードがセマンティクスに沿っているか（201/204/400/401/403/404/422 など）
+        - リクエスト・レスポンスのスキーマに `required` フィールドが適切に定義されているか
+        - 既存エンドポイントへの破壊的変更（フィールド削除・型変更）がないか
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+
+code_generation:
+  docstrings:
+    enabled: false
+  unit_tests:
+    enabled: false
+
+issue_enrichment:
+  auto_enrich:
+    enabled: false
