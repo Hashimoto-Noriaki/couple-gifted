@@ -103,6 +103,19 @@ cd frontend && pnpm test
 cd frontend && pnpm test run
 ```
 
+### Playwright（E2Eテスト）
+
+```bash
+# 実行（dev サーバーを自動起動）
+cd frontend && pnpm test:e2e
+
+# インタラクティブUIモード
+cd frontend && pnpm test:e2e:ui
+
+# テストレポートを開く
+cd frontend && pnpm test:e2e:report
+```
+
 ### 型チェック
 
 ```bash
