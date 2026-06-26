@@ -76,6 +76,13 @@ docker compose exec api bundle exec rubocop
 docker compose exec api bundle exec rubocop -a
 ```
 
+## Swagger UI
+
+```bash
+# 起動（http://localhost:8080）
+docker compose up -d swagger
+```
+
 ## フロントエンド（Next.js）
 
 ```bash
@@ -94,6 +101,25 @@ cd frontend && pnpm test
 
 # 一回実行して終了（CI用）
 cd frontend && pnpm test run
+```
+
+### Playwright（E2Eテスト）
+
+```bash
+# 実行（dev サーバーを自動起動）
+cd frontend && pnpm test:e2e
+
+# インタラクティブUIモード
+cd frontend && pnpm test:e2e:ui
+
+# テストレポートを開く
+cd frontend && pnpm test:e2e:report
+```
+
+### 型チェック
+
+```bash
+cd frontend && pnpm run type-check
 ```
 
 ### Biome（Lint / Format）

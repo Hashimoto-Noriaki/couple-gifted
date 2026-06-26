@@ -15,11 +15,43 @@ GET    /api/v1/spots/:id
 
 GET    /api/v1/tags
 
-## 口コミ（未実装）
+## 口コミ
 
-GET    /api/v1/spots/:id/spot_reviews
-POST   /api/v1/spots/:id/spot_reviews   # 要認証
-DELETE /api/v1/spot_reviews/:id         # 要認証・本人のみ
+### GET /api/v1/spots/:id/spot_reviews
+
+指定スポットの口コミ一覧を取得する。認証不要。
+
+**レスポンス 200:**
+
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "spot_review",
+      "attributes": {
+        "rating": 4,
+        "body": "とても良いスポットでした。",
+        "relationship_status_at_visit": "dating",
+        "created_at": "2026-05-19T00:00:00.000Z",
+        "user_nickname": "ユーザー名"
+      }
+    }
+  ]
+}
+```
+
+**エラー:**
+
+- 404: スポットが存在しない
+
+### POST /api/v1/spots/:id/spot_reviews（未実装）
+
+要認証
+
+### DELETE /api/v1/spot_reviews/:id（未実装）
+
+要認証・本人のみ
 
 ## いいね（未実装）
 

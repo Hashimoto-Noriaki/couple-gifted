@@ -1,5 +1,16 @@
 # 開発手順
 
+## API開発フロー（この順番を必ず守る）
+
+1. `docs/api.md` にエンドポイントを定義する
+2. `api/openapi.yaml` にリクエスト・レスポンスのスキーマを追記する
+3. バックエンドをTDDで実装する（下記「TDDの手順」参照）
+4. フロントエンドを実装する（Swaggerをもとに型安全に実装）
+
+> **なぜこの順番か**  
+> openapi.yaml がフロントとバックのAPIの契約書になる。  
+> 先に定義することでフロントとバックの並行開発が可能になり、後からの仕様変更を防ぐ。
+
 ## TDDの手順（この順番を必ず守る）
 
 1. Model Spec（バリデーション・アソシエーション）
@@ -24,6 +35,17 @@
 4.「Specを通すControllerを実装して」
 5.「ロジックをServiceクラスに切り出して」
 
+## Swagger UI
+
+`api/openapi.yaml` をブラウザで確認できる。
+
+```bash
+# 起動（http://localhost:8080）
+docker compose up -d swagger
+```
+
+`openapi.yaml` を更新した場合はブラウザをリロードするだけで反映される。
+
 ## よく使うコマンド
 
 - docker compose exec api bundle exec rspec                          # 全テスト
@@ -41,6 +63,9 @@
 ### コマンド
 
 ```bash
+# 型チェック（CI用）
+cd frontend && pnpm run type-check
+
 # ウォッチモード（開発中）
 cd frontend && pnpm test
 
@@ -56,6 +81,30 @@ cd frontend && pnpm test:ui
 - テストフレームワーク: Vitest + jsdom
 - DOMアサーション: @testing-library/jest-dom
 - コンポーネント操作: @testing-library/react
+
+## E2Eテスト（Playwright）
+
+テストファイルは `frontend/e2e/*.spec.ts` に置く。
+
+### E2Eコマンド
+
+```bash
+# 実行（dev サーバーを自動起動）
+cd frontend && pnpm test:e2e
+
+# インタラクティブUIモード
+cd frontend && pnpm test:e2e:ui
+
+# テストレポートを開く
+cd frontend && pnpm test:e2e:report
+```
+
+### E2E構成
+
+- テストフレームワーク: Playwright
+- ブラウザ: Chromium
+- baseURL: `http://localhost:3001`（Rails API の 3000 番と衝突しないよう固定）
+- `webServer` 設定により `pnpm dev --port 3001` を自動起動
 
 ## やってはいけないこと
 

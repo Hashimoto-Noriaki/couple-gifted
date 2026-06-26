@@ -15,6 +15,8 @@ tags:
     description: 認証
   - name: spots
     description: デートスポット
+  - name: spot_reviews
+    description: 口コミ
 
 paths:
   /auth:
@@ -165,6 +167,32 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/spots/{id}/spot_reviews:
+    get:
+      tags: [spot_reviews]
+      summary: 口コミ一覧取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: スポットID
+      responses:
+        "200":
+          description: 口コミ一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SpotReviewData"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     tokenAuth:
@@ -223,6 +251,34 @@ components:
               type: number
               format: float
             google_place_id:
+              type: string
+
+    SpotReviewData:
+      type: object
+      required: [id, type, attributes]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: spot_review
+        attributes:
+          type: object
+          required: [rating, body, relationship_status_at_visit, created_at, user_nickname]
+          properties:
+            rating:
+              type: integer
+              minimum: 1
+              maximum: 5
+            body:
+              type: string
+            relationship_status_at_visit:
+              type: string
+              enum: [dating, married]
+            created_at:
+              type: string
+              format: date-time
+            user_nickname:
               type: string
 
     Error:
