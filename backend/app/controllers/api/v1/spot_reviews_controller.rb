@@ -28,7 +28,7 @@ module Api
         review = SpotReview.find(params[:id])
 
         unless review.owned_by?(current_user)
-          
+
           render json: { error: "権限がありません" }, status: :forbidden
           return
         end
