@@ -35,3 +35,4 @@ CoupleGifted（カップルギフテッド）
 - ブランチ: feature/ fix/ hotfix/ refactor/ docs/ chore/
 - コミット: feat: / fix: / hotfix: / test: / refactor: / docs: / chore:
 - PRを出したらCodeRabbitのレビューを確認してからマージ
+- PRマージ前に `/code-review` でコードレビュー、セキュリティが気になる変更は `/security-review` も実行する
