@@ -192,6 +192,63 @@ paths:
                       $ref: "#/components/schemas/SpotReviewData"
         "404":
           $ref: "#/components/responses/NotFound"
+    post:
+      tags: [spot_reviews]
+      summary: 口コミ投稿
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: スポットID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpotReviewInput"
+      responses:
+        "201":
+          description: 口コミ投稿成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SpotReviewData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /api/v1/spot_reviews/{id}:
+    delete:
+      tags: [spot_reviews]
+      summary: 口コミ削除（本人のみ）
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 口コミID
+      responses:
+        "204":
+          description: 削除成功（ボディなし）
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
 components:
   securitySchemes:
@@ -253,6 +310,20 @@ components:
             google_place_id:
               type: string
 
+    SpotReviewInput:
+      type: object
+      required: [rating, body, relationship_status_at_visit]
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        body:
+          type: string
+        relationship_status_at_visit:
+          type: string
+          enum: [dating, married]
+
     SpotReviewData:
       type: object
       required: [id, type, attributes]
@@ -296,6 +367,12 @@ components:
             $ref: "#/components/schemas/Error"
     UnprocessableEntity:
       description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: 権限なし
       content:
         application/json:
           schema:
