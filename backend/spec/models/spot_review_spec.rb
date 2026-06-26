@@ -15,4 +15,18 @@ RSpec.describe SpotReview, type: :model do
     it { should belong_to(:user) }
     it { should belong_to(:spot) }
   end
+
+  describe '#owned_by?' do
+    let(:owner) { create(:user) }
+    let(:other_user) { create(:user) }
+    let(:review) { create(:spot_review, user: owner) }
+
+    it 'オーナーに対してtrueを返す' do
+      expect(review.owned_by?(owner)).to be true
+    end
+
+    it '他のユーザーに対してfalseを返す' do
+      expect(review.owned_by?(other_user)).to be false
+    end
+  end
 end
