@@ -5,4 +5,8 @@ class SpotReview < ApplicationRecord
   validates :rating, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 5, only_integer: true }
   validates :body, presence: true
   validates :relationship_status_at_visit, presence: true
+
+  def owned_by?(user)
+    user_id == user.id
+  end
 end

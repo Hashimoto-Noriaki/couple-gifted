@@ -5,8 +5,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :spots, only: %i[index show] do
-        resources :spot_reviews, only: %i[index]
+        resources :spot_reviews, only: %i[index create]
       end
+      resources :spot_reviews, only: %i[destroy]
       resources :tags, only: %i[index]
     end
   end
