@@ -32,7 +32,9 @@ CoupleGifted（カップルギフテッド）
 
 ## Gitルール
 
-- ブランチ: feature/ fix/ hotfix/ refactor/ docs/ chore/
+- トランクベース開発。`master` が唯一のメインブランチ
+- ブランチ: feature/ fix/ hotfix/ refactor/ docs/ chore/（短命・1〜2日でマージ）
 - コミット: feat: / fix: / hotfix: / test: / refactor: / docs: / chore:
+- PRは `master` をベースに作成する
 - PRを出したらCodeRabbitのレビューを確認してからマージ
 - PRマージ前に `/code-review` でコードレビュー、セキュリティが気になる変更は `/security-review` も実行する

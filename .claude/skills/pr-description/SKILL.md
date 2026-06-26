@@ -2,7 +2,7 @@
 description: PRの説明文をテンプレートに沿って生成する
 ---
 
-1. ベースブランチを特定する（`develop` があれば優先、なければ `main` / `master`）
+1. ベースブランチは `master` を使う
 2. `git diff $(git merge-base HEAD <ベースブランチ>)..HEAD` で差分を確認する
 3. `.github/pull_request_template.md` のフォーマットに沿って PR 説明文を生成し、ユーザーに提示する
 4. ユーザーの承認を得たら、以下を順に実行してPRを作成する
