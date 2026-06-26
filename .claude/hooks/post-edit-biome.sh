@@ -8,4 +8,4 @@ if [[ "$FILE" != *.ts && "$FILE" != *.tsx && "$FILE" != *.js && "$FILE" != *.jsx
   exit 0
 fi
 
-cd frontend && pnpm exec biome check --write "$FILE" 2>&1
+cd frontend && pnpm exec biome check --write "${FILE#frontend/}" 2>&1
