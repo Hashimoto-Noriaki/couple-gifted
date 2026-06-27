@@ -106,6 +106,52 @@ cd frontend && pnpm test:e2e:report
 - baseURL: `http://localhost:3001`（Rails API の 3000 番と衝突しないよう固定）
 - `webServer` 設定により `pnpm dev --port 3001` を自動起動
 
+## 将来の検討：BDD（Behavior-Driven Development）
+
+現在は TDD を採用しているが、将来的に BDD の導入を検討している。
+詳細は `.claude/rules/testing.md` を参照。
+
+- 候補ツール：Cucumber（Gherkin 記法）または RSpec + Capybara
+- 導入タイミング：非エンジニアが仕様レビューに参加するようになった時点で再検討
+
+## 将来の検討：BFF（Backend For Frontend）
+
+現在は Next.js（フロントエンド）が Rails API に直接アクセスする構成だが、
+Phase 2 以降で複数の外部API（楽天・AI）が増えるタイミングで BFF の導入を検討する。
+
+### BFF とは
+
+フロントエンドのために専用のバックエンド中継レイヤーを置くパターン。
+複数のバックエンド・外部APIを集約し、UIに最適化したレスポンスを返す。
+
+```bash
+現在:  Next.js → Rails API
+BFF後: Next.js → BFF（Next.js API Routes）→ Rails API
+                                            → 楽天API
+                                            → AI サービス（Phase 3）
+```
+
+### このプロジェクトで導入する動機
+
+- Phase 2：楽天API連携でレスポンス集約が必要になる
+- Phase 3：AIプレゼント診断で複数サービスをオーケストレーションする
+- 認証トークンをサーバーサイドで管理することでセキュリティが向上する
+
+### 実装方針（候補）
+
+| 方針 | 概要 | 向いているケース |
+|------|------|-----------------|
+| Next.js Route Handlers | 既存スタックの延長。追加サービス不要 | シンプルな集約のみ |
+| Hono（Next.js内マウント） | `app/api/[...route]/route.ts` にマウント。`hono/client` で型安全なRPCが実現できる | 型安全性・明示的なルーティングが必要な場合 |
+
+- Hono を別サービスとして立てると管理コストが増えるため、Next.js 内マウントを優先する
+- `hono/client` を使うと フロント↔BFF 間が OpenAPI と同様に型安全になり、既存のスキーマファースト方針と相性が良い
+
+### 導入タイミングの目安
+
+- Phase 2（楽天API連携）開始時に再検討する
+- 現状の Rails API 直接呼び出しで問題なければ見送る
+
 ## やってはいけないこと
 
 - Controllerにビジネスロジックを書かない
