@@ -17,6 +17,8 @@ tags:
     description: デートスポット
   - name: spot_reviews
     description: 口コミ
+  - name: likes
+    description: いいね
 
 paths:
   /auth:
@@ -247,6 +249,61 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/spot_reviews/{id}/likes:
+    post:
+      tags: [likes]
+      summary: いいね（口コミに）
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 口コミID
+      responses:
+        "201":
+          description: いいね成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - likes_count
+                properties:
+                  likes_count:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: すでにいいね済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags: [likes]
+      summary: いいね取り消し
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 口コミID
+      responses:
+        "204":
+          description: 取り消し成功（ボディなし）
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
 

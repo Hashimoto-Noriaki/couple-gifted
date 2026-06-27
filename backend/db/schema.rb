@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_152022) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_27_144321) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "likes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "spot_review_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["spot_review_id"], name: "index_likes_on_spot_review_id"
+    t.index ["user_id", "spot_review_id"], name: "index_likes_on_user_id_and_spot_review_id", unique: true
+    t.index ["user_id"], name: "index_likes_on_user_id"
+  end
 
   create_table "spot_reviews", force: :cascade do |t|
     t.text "body"
@@ -78,6 +88,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_152022) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "likes", "spot_reviews"
+  add_foreign_key "likes", "users"
   add_foreign_key "spot_reviews", "spots"
   add_foreign_key "spot_reviews", "users"
   add_foreign_key "spot_tags", "spots"
