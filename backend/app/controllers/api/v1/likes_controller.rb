@@ -12,6 +12,8 @@ module Api
         else
           render json: { error: like.errors.full_messages.join(", ") }, status: :conflict
         end
+      rescue ActiveRecord::RecordNotUnique
+        render json: { error: "すでにいいね済みです" }, status: :conflict
       end
 
       def destroy
