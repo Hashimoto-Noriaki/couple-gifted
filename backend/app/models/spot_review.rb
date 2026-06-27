@@ -1,6 +1,7 @@
 class SpotReview < ApplicationRecord
   belongs_to :user
   belongs_to :spot
+  has_many :likes, dependent: :destroy
 
   validates :rating, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 5, only_integer: true }
   validates :body, presence: true

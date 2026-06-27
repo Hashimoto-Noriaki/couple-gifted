@@ -7,17 +7,15 @@ Rails.application.routes.draw do
       resources :spots, only: %i[index show] do
         resources :spot_reviews, only: %i[index create]
       end
-      resources :spot_reviews, only: %i[destroy]
+      resources :spot_reviews, only: %i[destroy] do
+        member do
+          post "likes", to: "likes#create"
+          delete "likes", to: "likes#destroy"
+        end
+      end
       resources :tags, only: %i[index]
     end
   end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
