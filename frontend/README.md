@@ -20,6 +20,24 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Lint & Format
+
+This project uses [ESLint](https://eslint.org) (`eslint-config-next`) for Next.js-specific rules, and [Biome](https://biomejs.dev) for general linting and formatting.
+
+```bash
+# ESLint（Next.js固有のルールチェック）
+pnpm lint
+
+# Biome（lint + フォーマットチェック）
+pnpm check
+
+# Biome（lint + フォーマットを自動修正）
+pnpm check:fix
+
+# Biome（フォーマットのみ自動修正）
+pnpm format
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
