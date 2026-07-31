@@ -38,6 +38,18 @@ pnpm check:fix
 pnpm format
 ```
 
+## Storybook
+
+This project uses [Storybook](https://storybook.js.org) to develop and preview UI components in isolation. Story files live alongside their components (`*.stories.tsx`) under `app/`.
+
+```bash
+# Start Storybook (http://localhost:6006)
+pnpm storybook
+
+# Build the static Storybook site
+pnpm build-storybook
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
