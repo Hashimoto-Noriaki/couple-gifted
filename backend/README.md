@@ -1,24 +1,34 @@
-# README
+# couple-gifted backend
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Ruby on Rails製のバックエンドAPI。
 
-Things you may want to cover:
+## Getting Started
 
-* Ruby version
+```bash
+bundle install
+bin/rails db:create db:migrate
+bin/rails server
+```
 
-* System dependencies
+## Test
 
-* Configuration
+[RSpec](https://rspec.info) を使用しています。
 
-* Database creation
+```bash
+bundle exec rspec
+```
 
-* Database initialization
+## Lint & Format
 
-* How to run the test suite
+[Rubocop](https://github.com/rubocop/rubocop)（Omakase設定）を使用しています。
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+# チェックのみ
+bundle exec rubocop
 
-* Deployment instructions
+# 自動修正（安全な修正のみ）
+bundle exec rubocop -a
 
-* ...
+# 自動修正（安全でない修正も含む）
+bundle exec rubocop -A
+```
