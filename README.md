@@ -6,6 +6,7 @@
 
 - [`doc/`](./doc) — 要件定義・ユーザーストーリー・ユースケース・ユビキタス言語などのドキュメント
 - [`frontend/`](./frontend) — フロントエンド（Next.js）。セットアップ・開発コマンドは [`frontend/README.md`](./frontend/README.md) を参照
+- [`backend/`](./backend) — バックエンド（Rails API）。セットアップ・開発コマンドは [`backend/README.md`](./backend/README.md) を参照
 
 ## ドキュメント
 
@@ -13,3 +14,4 @@
 - [ユーザーストーリー](./doc/user-stories.md)
 - [ユースケース](./doc/use-cases.md)
 - [ユビキタス言語](./doc/ubiquitous-language.md)
+- [ER図・DB設計](./doc/er-and-db-design.md)
