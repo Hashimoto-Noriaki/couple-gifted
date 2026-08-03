@@ -1,4 +1,4 @@
-[Next.js](https://nextjs.org) 製のフロントエンド。
+# [Next.js](https://nextjs.org) 製のフロントエンド
 
 ## Getting Started
 
