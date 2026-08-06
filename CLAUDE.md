@@ -48,6 +48,7 @@
 
 - PRタイトルもコミットと同じプレフィックス規則に従う
 - **CodeRabbitのレビューを確認してからマージする**（`.coderabbit.yaml`にドメインルールを踏まえたレビュー観点を設定済み）
+  - この2つは役割が違う：CLAUDE.mdは「実装中に`doc/`を見に行かせる」ポインタ、`.coderabbit.yaml`は「ルールの中身をレビュー時に直接埋め込む」もの。後者は自動追従しないので、**`doc/domain-model.md`や`doc/ubiquitous-language.md`を変更したときは`.coderabbit.yaml`のpath_instructionsも見直す**
 - Request SpecとControllerはセットで1つのPRにする（Specだけだと CI が失敗するため）
 - マージ前に `/code-review`、セキュリティが気になる変更は `/security-review` も実行する
 
