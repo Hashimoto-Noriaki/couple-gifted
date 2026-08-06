@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit 設定ファイル
+# ドキュメント: https://docs.coderabbit.ai/getting-started/configure-coderabbit
+
+language: "ja-JP"
+
+reviews:
+  profile: chill
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_filters:
+    - "!**/vendor/**"
+    - "!**/node_modules/**"
+    - "!**/.ruby-lsp/**"
+    - "!**/pnpm-lock.yaml"
+    - "!backend/db/schema.rb"
+
+  # doc/domain-model.md・doc/ubiquitous-language.md の決定事項の抜粋。
+  # ルール自体を変更したときは元のドキュメントを直し、ここにも反映すること。
+  path_instructions:
+    - path: "backend/app/models/**/*.rb"
+      instructions: |
+        このプロジェクトのドメインルール（doc/domain-model.md）を踏まえてレビューしてください。
+
+        - レビュー（Review）は投稿時点の関係ステージ(relationship_stage)をコピーして保持する。
+          会員の現在のステージから動的に算出・表示するコードになっていたら指摘する
+          （過去のレビューが現在のステージに書き換わってしまうため、意図的な非正規化）。
+        - スポットの平均評価は「1組のカップル/会員につき、1スポットあたり最新1件」のみを集計する。
+          全レビューを単純平均しているコードは指摘する。
+        - 保存（Save）は「共有」か「サプライズ」かを持つ。共有→サプライズへの逆方向の変更を許可する
+          コードは指摘する（不可逆の仕様）。
+        - 招待コードが使えない理由（期限切れ／使用済み／発行者の状態など）をエラーメッセージやAPIレスポンスで
+          区別して返していないか確認する。区別すると総当たりの手がかりになるため、理由は常に一様に扱う。
+        - 招待コードは1会員につき常に有効なものが1つだけ。再発行時に旧コードを無効化しているか確認する。
+        - カップルの連携解除は「片方の意思のみ」でできる必要がある。相手の承認を要求する実装になっていないか確認する。
+        - 用語は doc/ubiquitous-language.md に従う。「共有レビュー」「カップル解除」「子どもの有無」を
+          レビューの絞り込み文脈で使う、といった誤用がコード上の命名・コメントに出ていたら指摘する
+          （正しくは「カップルレビュー/ソロレビュー」「連携解除」「子連れ訪問」）。
+
+    - path: "backend/app/controllers/**/*.rb"
+      instructions: |
+        doc/domain-model.md STEP3「見え方のルール」を踏まえて認可・可視性をレビューしてください。
+
+        - 下書きレビューは本人と管理者以外に見えてはならない。
+        - サプライズ保存はパートナーから「一覧に出ない／詳細を開けない／検索結果に出ない／件数にも数えない／
+          存在自体が伝わらない」を満たす必要がある。一部だけ隠して件数や存在が漏れる実装になっていないか確認する。
+        - 通報は投稿者に伝わってはならない。
+        - 管理操作（削除・停止など）は実行者・日時・内容・理由を記録しているか確認する。
+
+    - path: "backend/spec/**/*.rb"
+      instructions: |
+        ドメインのルールに対応するテストが書かれているか確認してください。
+        特に「見えないこと」を確認するテスト（サプライズ保存がパートナーから一切見えない、
+        下書きレビューが他人から見えない等）が、正常系だけでなく否定的なケースとして
+        書かれているかを重視する。
+
+    - path: "frontend/**/*.{ts,tsx}"
+      instructions: |
+        doc/ubiquitous-language.md の用語統一を踏まえてレビューしてください。
+        「共有」は保存リストの可視性のみに使う語。カップル連携の意味で「共有」という変数名・
+        ラベル文言を使っていたら指摘する。「解除」は連携解除にのみ使う語で、検索条件のクリアに
+        使っていたら「絞り込みを外す」への変更を提案する。予算帯を表示するUIでは
+        「ふたり合計」であることが画面上に明示されているか確認する。
+
+chat:
+  auto_reply: true
