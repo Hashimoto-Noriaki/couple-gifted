@@ -73,3 +73,10 @@ RSpec.configure do |config|
   # Allow calling FactoryBot methods (create, build, ...) without the `FactoryBot.` prefix.
   config.include FactoryBot::Syntax::Methods
 end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
