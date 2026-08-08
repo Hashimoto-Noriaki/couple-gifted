@@ -16,7 +16,7 @@ Controller・Service・Model のコードを読み、N+1 クエリが発生し�
 
 問題箇所をファイル・行番号とともに列挙し、修正案（`includes` の追加など）を提示する。
 
-```
+```ruby
 [N+1の疑い] app/controllers/api/v1/spots_controller.rb:12
   spots.each { |s| s.tags }  # tags が都度クエリ発生
 → 修正案: Spot.includes(:tags)
@@ -27,4 +27,5 @@ Controller・Service・Model のコードを読み、N+1 クエリが発生し�
 指定がなければ以下を対象にする:
 - `app/controllers/`
 - `app/services/`
+- `app/models/`
 - `app/serializers/`
