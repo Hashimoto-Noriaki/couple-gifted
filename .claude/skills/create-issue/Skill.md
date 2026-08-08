@@ -1,6 +1,6 @@
----
-name: create-issue
-description: GitHubのissueを対話形式で作成する
+1. `body_file="$(mktemp "${TMPDIR:-/tmp}/issue-body.XXXXXX")"` で一意なファイルを作成する
+2. Writeツールで本文を `"$body_file"` に書き出す
+3. `trap 'rm -f -- "$body_file"' EXIT`
 ---
 
 ユーザーの説明をもとに GitHub issue を作成する。
@@ -15,7 +15,7 @@ description: GitHubのissueを対話形式で作成する
    2. タイトルを変数に入れる: `title="<生成したタイトル>"`
    3. 作成する:
       ```bash
-      gh issue create --title "$title" --body-file /tmp/issue-body.md
+      gh issue create --title "$title" --body-file "$body_file"
       ```
 
 ## 本文テンプレート
