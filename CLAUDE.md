@@ -5,7 +5,7 @@
 
 `backend`（Rails APIモード）と`frontend`（Next.js）のモノレポ構成。
 
-このファイルは横断ルールのみを置く。スタック固有の詳細は `backend/CLAUDE.md` / `frontend/CLAUDE.md` を参照。
+このファイルは横断ルールのみを置く。スタック固有の詳細は `.claude/rules/backend.md`（Rails）/ `.claude/rules/frontend.md`（Next.js）を参照。
 
 ## リポジトリ構成
 
@@ -30,27 +30,14 @@
 
 ## 開発の進め方
 
-- **TDD**：Specを先に書いてから実装する
+- **TDD**：Specを先に書いてから実装する。カバレッジ方針・対象範囲の考え方は`.claude/rules/testing.md`を参照
 - **スキーマファースト**：エンドポイントを追加・変更するときは、先に`doc/api-design.md`（将来的には`openapi.yaml`）を更新してから実装する。フロント・バック双方とも、ここに無いエンドポイントを先に実装しない
 - Controllerは薄く。ロジックはModel（将来的にServiceが必要になったら導入）に書く
 - N+1クエリを放置しない
 
-## Git・コミット
+## Git・ブランチ・PR
 
-- トランクベース。`master`が唯一のメインブランチ
-  - ※CI（`backend/.github/workflows/ci.yml`）に`develop`向けpushトリガーが残っているが、実運用は`master`への直PRになっている。要整理（別チケット）
-- コミットは機能・テスト・設定ごとに細かく分ける
-- プレフィックス: `feat` / `test` / `fix` / `chore` / `refactor` / `docs`
-- テストだけの変更は`test:`、実装込みは`feat:`
-- ファイルはできる限りジェネレータ（`rails generate`等）で作る。マイグレーションも直接作成しない
-
-## PR
-
-- PRタイトルもコミットと同じプレフィックス規則に従う
-- **CodeRabbitのレビューを確認してからマージする**（`.coderabbit.yaml`にドメインルールを踏まえたレビュー観点を設定済み）
-  - この2つは役割が違う：CLAUDE.mdは「実装中に`doc/`を見に行かせる」ポインタ、`.coderabbit.yaml`は「ルールの中身をレビュー時に直接埋め込む」もの。後者は自動追従しないので、**`doc/domain-model.md`や`doc/ubiquitous-language.md`を変更したときは`.coderabbit.yaml`のpath_instructionsも見直す**
-- Request SpecとControllerはセットで1つのPRにする（Specだけだと CI が失敗するため）
-- マージ前に `/code-review`、セキュリティが気になる変更は `/security-review` も実行する
+ブランチ命名・コミットプレフィックス・PRの進め方は `.claude/rules/git.md` を参照。
 
 ## ディレクトリ構成
 
@@ -74,4 +61,4 @@ docker compose exec api bash  # コンテナに入る
 docker compose down           # 停止
 ```
 
-詳しいコマンドは `backend/CLAUDE.md` を参照。
+詳しいコマンドは `.claude/rules/backend.md` を参照。
