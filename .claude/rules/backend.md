@@ -55,7 +55,7 @@ paths:
 
 ## 管理画面（APIを経由しない）
 
-管理者向けの窓口は作らない（`doc/api-design.md`決定事項ログ #30・#31）。管理画面はRailsの通常のController/View（ERB）で作り、`/api/v1/`配下には置かない。
+`/api/v1/`配下に管理者向けAPI（窓口）を作らない（`doc/api-design.md`決定事項ログ #30・#31）。管理画面はAPIを経由せず、Railsの通常のController/View（ERB）で作る。
 
 - ルーティング・Controllerは`app/controllers/admin/`のような別namespaceにする（`api/v1/`配下に混ぜない）
 - レスポンスはJSONではなくHTML（ERB）。上記のRFC 9457・Serializerのルールは対象外（それはNext.js向けAPIの契約であり、社内運営ツールには適用しないと決定済み）
@@ -82,7 +82,9 @@ docker compose down
 
 - `bin/rails`を直接叩くコマンドは`RAILS_ENV`が development になる点に注意（`spec/rails_helper.rb`側でtestは固定済みなのでrspec実行時は問題ない）
 
-## Lint・セキュリティ（CIで自動実行）
+## Lint・セキュリティ
+
+⚠️`backend/.github/workflows/ci.yml`はリポジトリルートの`.github/workflows/`ではない場所に置かれているためGitHub Actionsに認識されず、実行履歴0件（未整備。`.claude/rules/git.md`参照）。**CIでは自動実行されない**ため、コミット前に手元で実行する。
 
 - `bin/rubocop -f github`（rubocop-rails-omakase）
 - `bin/brakeman --no-pager`
