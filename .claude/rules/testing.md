@@ -9,7 +9,7 @@
 - 目標は**C1（分岐カバレッジ）**。backend/frontend共通、モノレポ全体の方針
 - 数値目標（◯%以上等）はまだ決めない。実コードとテストがある程度増えてから、CIゲートにするかどうかも含めて判断する
 - **backend**：SimpleCovは未導入（Gemfileに無し）。導入時は`SimpleCov.enable_coverage :branch`で分岐カバレッジを有効化する（Ruby 3.4系で対応済み）
-- **frontend**：Vitest導入時に、coverage（v8 provider）で分岐カバレッジを計測する設定にする
+- **frontend**：既存のVitestにcoverage（v8 provider）を追加するとき、分岐カバレッジを計測する設定にする
 
 ## 対象範囲の考え方
 
