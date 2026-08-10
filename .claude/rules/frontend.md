@@ -81,6 +81,7 @@ UIの文言・変数名・コンポーネント名で、決めた用語と違う
 ## Lint・フォーマット
 
 ```bash
+pnpm lint        # ESLint
 pnpm check        # Biome チェック
 pnpm check:fix     # 自動修正
 pnpm format        # フォーマットのみ
