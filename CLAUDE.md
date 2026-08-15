@@ -56,9 +56,13 @@ backendはDocker（SQLite3、DBコンテナ無し）。frontendは今のとこ�
 （実コードがまだ薄いため。必要になったら追加する）。
 
 ```bash
-docker compose up -d          # backend起動
-docker compose exec api bash  # コンテナに入る
-docker compose down           # 停止
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build  # backend起動（初回・ホストのUID/GID指定）
+docker compose exec api bash                                      # コンテナに入る
+docker compose down                                                # 停止
 ```
+
+`HOST_UID`/`HOST_GID`はコンテナ内の実行ユーザーとホストユーザーを合わせるための指定。
+`./backend:/rails`をbind mountしているため、指定しないとコンテナが作成するファイル（DB・ログ等）が
+ホスト側で別ユーザー所有になる（未指定時は1000:1000にフォールバック）。
 
 詳しいコマンドは `.claude/rules/backend.md` を参照。

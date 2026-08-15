@@ -71,7 +71,7 @@ paths:
 ## Docker（SQLite3、DBコンテナ無し）
 
 ```bash
-docker compose up -d                          # 起動（初回はビルドも走る）
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build  # 起動（初回・ホストのUID/GID指定）
 docker compose exec api bash                  # コンテナに入る
 docker compose exec api bin/rails db:migrate
 docker compose exec api bundle exec rspec
