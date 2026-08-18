@@ -3,8 +3,7 @@
 ## ブランチ
 
 - トランクベース。`master`が唯一のメインブランチ
-  - ※CI（`backend/.github/workflows/ci.yml`）に`develop`向けpushトリガーが残っているが、実運用は`master`への直PRになっている。要整理（別チケット）
-  - ※既知の課題（別チケット）：`ci.yml`は`backend/.github/workflows/`に置かれているが、GitHub Actionsは`.github/workflows/`をリポジトリルートでしか認識しない。実行履歴0件で、これまで一度も動いていない。移動時に`test`ジョブ（`bin/rails db:test:prepare test`）を`bundle exec rspec`に直すことも合わせて必要
+- CIは`.github/workflows/ci.yml`（リポジトリルート）。`backend`はモノレポのサブディレクトリなので、Ruby関連のjob（`scan_ruby`・`lint`・`test`）は`working-directory: backend`を指定している
 - ブランチ名は `<prefix>/<kebab-case説明>`。prefixはコミット・PRと同じ語彙（`feat` / `test` / `fix` / `chore` / `refactor` / `docs`）を使う
   - 例：`feat/review-post`、`fix/n-plus-one`、`chore/harness-rules`
   - 過去に`doc/xxx`表記のブランチがあるが、コミットプレフィックスは`docs`なので今後は`docs/`に揃える
