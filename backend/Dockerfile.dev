@@ -1,0 +1,47 @@
+# syntax=docker/dockerfile:1
+#
+# 開発用Dockerfile。本番用は Dockerfile（Kamalデプロイ向け）を参照。
+# SQLite3を使うため、DB用の別コンテナは持たない。
+
+ARG RUBY_VERSION=3.4.10
+FROM ruby:$RUBY_VERSION-slim
+
+# ホストユーザーとUID/GIDを合わせる。./backend:/rails をbind mountするため、
+# 合わせないとコンテナ内で作成したファイル（DB・ログ等）がホスト側でroot所有になる。
+# docker-compose.ymlのbuild.argsで上書きする（例: HOST_UID=$(id -u) HOST_GID=$(id -g)）
+ARG UID=1000
+ARG GID=1000
+
+WORKDIR /rails
+
+# アプリの実行とgemのビルドに必要なパッケージ
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential curl git libjemalloc2 libvips libyaml-dev pkg-config sqlite3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle"
+
+# 非rootユーザーを作成する。GIDがベースイメージの既存グループ（Debianのdialout=20等）と
+# 衝突する場合は新規作成せず、既存のグループをそのまま使う
+RUN if ! getent group "$GID" > /dev/null; then groupadd --gid "$GID" rails; fi && \
+    useradd --uid "$UID" --gid "$GID" --create-home --shell /bin/bash rails && \
+    mkdir -p /usr/local/bundle && \
+    chown -R "$UID:$GID" /rails /usr/local/bundle
+
+USER $UID:$GID
+
+# Gemfileだけ先にコピーしてbundle installをレイヤーキャッシュさせる
+COPY --chown=$UID:$GID Gemfile Gemfile.lock ./
+RUN bundle install
+
+COPY --chown=$UID:$GID . .
+
+EXPOSE 3000
+
+# bundle_cache（named volume）は古いgemを保持したままイメージに上書きされないため、
+# 起動のたびにbundle checkで確認し、Gemfile.lock変更時はbundle installし直す
+# （bin/setupの"bundle check || bundle install"と同じパターン）。
+# その後DBが無ければ作成・マイグレーションしてから起動する
+CMD ["sh", "-c", "(bundle check || bundle install) && bin/rails db:prepare && exec bin/rails server -b 0.0.0.0 -p 3000"]
