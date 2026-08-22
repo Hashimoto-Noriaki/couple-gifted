@@ -8,6 +8,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
 require 'rspec/rails'
+require 'committee/rails/test/methods'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -72,6 +73,16 @@ RSpec.configure do |config|
 
   # Allow calling FactoryBot methods (create, build, ...) without the `FactoryBot.` prefix.
   config.include FactoryBot::Syntax::Methods
+
+  # doc/api/openapi.yaml をSSoTとしてリクエスト/レスポンスを検証する（doc/api-design.md「6. 契約の維持」）。
+  # doc/ はコンテナに /doc としてマウントされている（docker-compose.yml参照。/rails からは見えない）。
+  # Request Spec内で assert_schema_conform(status) / assert_request_schema_confirm / assert_response_schema_confirm を使う。
+  config.add_setting :committee_options
+  config.committee_options = {
+    schema_path: Rails.root.join('..', 'doc', 'api', 'openapi.yaml').to_s,
+    strict_reference_validation: true
+  }
+  config.include Committee::Rails::Test::Methods, type: :request
 end
 
 Shoulda::Matchers.configure do |config|
