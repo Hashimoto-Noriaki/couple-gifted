@@ -25,13 +25,15 @@
 | `doc/domain-model.md` | 対象物・動詞・守るべきルール。「技術の都合で歪めてはいけない判断」を含む |
 | `doc/ubiquitous-language.md` | 用語の統一。使わないと決めた言葉も載っている |
 | `doc/er-and-db-design.md` | テーブル・カラム設計 |
-| `doc/api-design.md` | エンドポイント設計。実スキーマは`openapi.yaml`が正本（未作成） |
+| `doc/api-design.md` | エンドポイント設計。実スキーマは`doc/api/openapi.yaml`が正本 |
+| `doc/api/openapi.yaml` | エンドポイントの実スキーマ（OpenAPI 3.0.3。`committee` gemが3.1系未対応のため）。機能ごとに順次追記する |
 | `doc/screen-flow.md` / `doc/wireframes.md` | 画面遷移・ワイヤーフレーム |
+| `doc/claude-code-guide.md` | `CLAUDE.md`・`.claude/`配下（rules・hooks・skills・settings.json）・`frontend/AGENTS.md`が何のためにあるかの解説 |
 
 ## 開発の進め方
 
 - **TDD**：Specを先に書いてから実装する。カバレッジ方針・対象範囲の考え方は`.claude/rules/testing.md`を参照
-- **スキーマファースト**：エンドポイントを追加・変更するときは、先に`doc/api-design.md`（将来的には`openapi.yaml`）を更新してから実装する。フロント・バック双方とも、ここに無いエンドポイントを先に実装しない
+- **スキーマファースト**：エンドポイントを追加・変更するときは、先に`doc/api-design.md`・`doc/api/openapi.yaml`を更新してから実装する。フロント・バック双方とも、ここに無いエンドポイントを先に実装しない
 - Controllerは薄く。ロジックはModel（将来的にServiceが必要になったら導入）に書く
 - N+1クエリを放置しない
 
@@ -64,5 +66,8 @@ docker compose down                                                # 停止
 `HOST_UID`/`HOST_GID`はコンテナ内の実行ユーザーとホストユーザーを合わせるための指定。
 `./backend:/rails`をbind mountしているため、指定しないとコンテナが作成するファイル（DB・ログ等）が
 ホスト側で別ユーザー所有になる（未指定時は1000:1000にフォールバック）。
+
+`./doc:/doc:ro`もbind mountしている。`doc/api/openapi.yaml`（APIスキーマの正本）をRailsコンテナから
+読ませるため（`/rails`だけだと`doc/`配下は見えない）。read-onlyなので、コンテナ内から`doc/`は編集できない。
 
 詳しいコマンドは `.claude/rules/backend.md` を参照。

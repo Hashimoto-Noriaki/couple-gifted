@@ -11,7 +11,7 @@ paths:
 
 - バージョンは`Gemfile`・`.ruby-version`を正とする（ここには書かない。ドリフト防止）
 - DBはSQLite3（DBコンテナ無し）。PostgreSQLは本番候補として検討中だが未確定。「PostgreSQL前提」のコードを書かない
-- 認証方式・レスポンスのシリアライズ方式は未決定（Gemfileに該当gemなし）。devise_token_auth・jsonapi-serializer等を導入すると、この場で断定しない。導入する際は`doc/api-design.md`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
+- 認証方式・レスポンスのシリアライズ方式は未決定（Gemfileに該当gemなし）。devise_token_auth・jsonapi-serializer等を導入すると、この場で断定しない。導入する際は`doc/api-design.md`・`doc/api/openapi.yaml`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
 - 外部API連携（Google Places API等）は`doc/`に記載がない限り前提にしない。使う場合はまず`doc/`に根拠を残す
 
 ## 開発の進め方（Railsに固有の部分）
@@ -51,7 +51,8 @@ paths:
   - 例外：招待コードのエラーは理由を区別せず常に同じ`type`を返す（総当たり対策、決定事項）
 - HTTPステータスコードはセマンティクスに従う（200 / 201 / 204 / 400 / 401 / 403 / 404 / 409 / 422 / 500）
 - レスポンスはControllerで直接ハッシュを組み立てず、何らかのSerializer層を経由させる。具体的な手段（jbuilder / jsonapi-serializer等）は未決定。導入時に`doc/`へ根拠を残してから決める
-- ⚠️**未整備（実装開始時に削除するTODO）**：`openapi.yaml`自体がまだ存在せず、`committee`gemも未導入。「スキーマファースト」は原則として決まっているが、契約を機械的に検証する仕組みはまだ無い。最初のエンドポイントを実装するときに、`openapi.yaml`作成・`committee`導入とセットで行う
+- `doc/api/openapi.yaml`をSSoTとし、`committee-rails`gemでリクエスト／レスポンスをスキーマ検証する（`spec/rails_helper.rb`に設定済み）。Request Specでは`assert_schema_conform`を使う
+  - ⚠️**未整備（Spot関連の最初のRequest Specを書くときに削除するTODO）**：`committee-rails`導入・`doc/api/openapi.yaml`雛形作成までは完了。まだ対応するController・Modelが無いため、実際にスキーマ検証を通したRequest Specは0件。CIでスキーマと実装のドリフトを検知する仕組みも未整備
 
 ## 管理画面（APIを経由しない）
 
@@ -59,7 +60,7 @@ paths:
 
 - ルーティング・Controllerは`app/controllers/admin/`のような別namespaceにする（`api/v1/`配下に混ぜない）
 - レスポンスはJSONではなくHTML（ERB）。上記のRFC 9457・Serializerのルールは対象外（それはNext.js向けAPIの契約であり、社内運営ツールには適用しないと決定済み）
-- `doc/api-design.md`・`openapi.yaml`への追記も不要（API-firstはクライアント-サーバー契約に関する方針で、運営ツールには適用しない）
+- `doc/api-design.md`・`doc/api/openapi.yaml`への追記も不要（API-firstはクライアント-サーバー契約に関する方針で、運営ツールには適用しない）
 - 認証はメンバー向けAPI認証とは別（未着手）
 
 ## コーディング規約（Railsに固有の部分）
@@ -93,3 +94,7 @@ docker compose down
 ## つまずきやすい点
 
 - Request Specが全部403になる場合、`config/environments/test.rb`の`config.hosts`を確認する
+- `doc/api/openapi.yaml`は`openapi: 3.0.3`で書く。`committee` gem（5.6.3時点）がOpenAPI 3.1系に未対応
+  （`Committee::OpenAPI3Unsupported`で例外になる）ため
+- `doc/`はコンテナ内で`/doc`（`/rails`ではなくコンテナルート直下、read-only）。`Rails.root.join('..', 'doc', ...)`で参照する
+  （`docker-compose.yml`の`./doc:/doc:ro`マウント、`spec/rails_helper.rb`の`committee_options`参照）
