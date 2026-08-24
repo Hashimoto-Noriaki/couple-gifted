@@ -2,7 +2,7 @@
 
 - **最終更新**：2026-08-04
 - **前提ドキュメント**：`doc/domain-model.md`、`doc/er-and-db-design.md`、`doc/wireframes.md`
-- **本書の範囲**：どんな窓口が必要かを決める。実際のスキーマは `openapi.yaml` が正本
+- **本書の範囲**：どんな窓口が必要かを決める。実際のスキーマは `doc/api/openapi.yaml` が正本
 
 ---
 
@@ -151,7 +151,8 @@ APIファーストはクライアントとサーバの契約に関する方針�
 
 ## エンドポイント一覧
 
-`openapi.yaml` を先に書き、実装はそれに従う。以下はその一覧。
+`doc/api/openapi.yaml` を先に書き、実装はそれに従う。以下はその一覧。
+（`doc/api/openapi.yaml`は機能ごとに順次追記する。現時点で定義済みなのはスポット検索・詳細のみ。決定事項ログ#21・#23）
 
 ### 認証・自分
 
@@ -252,7 +253,7 @@ APIファーストはクライアントとサーバの契約に関する方針�
 
 ### 4. エラーの形式を統一する
 
-RFC 9457（Problem Details）で統一し、`openapi.yaml` に定義する。
+RFC 9457（Problem Details）で統一し、`doc/api/openapi.yaml` に定義する。
 
 ```json
 {
@@ -272,10 +273,10 @@ RFC 9457（Problem Details）で統一し、`openapi.yaml` に定義する。
 
 ### 6. 契約の維持
 
-- `openapi.yaml` をSSoTとする
-- Rails側は committee でリクエスト／レスポンスを検証
-- Next.js側は openapi-typescript で型を生成する。**手書きの型をフロントに置かない**
-- CIでスキーマと実装のドリフトを検知し、外れたら落とす
+- `doc/api/openapi.yaml` をSSoTとする
+- Rails側は committee-rails でリクエスト／レスポンスを検証（`backend/spec/rails_helper.rb`で設定）
+- Next.js側は openapi-typescript で型を生成する。**手書きの型をフロントに置かない**（未導入）
+- CIでスキーマと実装のドリフトを検知し、外れたら落とす（未整備）
 
 ---
 

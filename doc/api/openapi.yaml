@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: CoupleGifted API
+  version: "0.1.0"
+  description: |
+    交際中から結婚後までのふたり向けライフプラットフォームのAPI。
+    詳細な設計判断・用語は doc/api-design.md を参照。
+    このファイルがエンドポイントの実スキーマの正本（SSoT）。
+
+    ## バージョンを3.0.3にしている理由
+    バックエンドの契約検証に使う committee gem（5.6.3時点）が OpenAPI 3.1 系に
+    未対応（`Committee::OpenAPI3Unsupported`）のため、3.0.3を使う。
+    committeeが3.1に対応したら見直す。
+
+    ## 未整備（実装が進むにつれて拡充する）
+    現時点では doc/requirements.md のスケジュール（Week 3-4 縦串貫通）に沿って、
+    スポット検索・詳細のみを定義している。他の窓口は doc/api-design.md の
+    「エンドポイント一覧」を見ながら機能ごとに追記する。
+
+servers:
+  - url: /api/v1
+
+paths:
+  /spots:
+    get:
+      operationId: listSpots
+      summary: スポットを検索する
+      description: |
+        条件に合うスポットの一覧を返す（カーソルページネーション）。
+        doc/api-design.md「設計上の判断 2」の通り、絞り込みには2種類ある。
+        - 探す軸（area_id・category_id・scene）：クライアントが明示的に送る
+        - 自分たち軸（stage・budget_range・with_child）：personalize=true を送ると
+          サーバが会員の情報から補完する。明示パラメータが優先される
+      tags: [spots]
+      parameters:
+        - name: area_id
+          in: query
+          description: 探す軸。エリアで絞り込む
+          schema:
+            type: integer
+        - name: category_id
+          in: query
+          description: 探す軸。カテゴリで絞り込む
+          schema:
+            type: integer
+        - name: scene
+          in: query
+          description: 探す軸。利用シーンで絞り込む
+          schema:
+            type: string
+        - name: personalize
+          in: query
+          description: 自分たち軸（ステージ・予算帯・子連れ訪問）をサーバ側で補完するか
+          schema:
+            type: boolean
+            default: false
+        - name: cursor
+          in: query
+          description: 前回のレスポンスの next_cursor
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: スポット一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpotList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /spots/{id}:
+    get:
+      operationId: getSpot
+      summary: スポットの詳細を見る
+      description: |
+        スポット1つの詳しい情報を返す。doc/api-design.md「設計上の判断 3」の通り、
+        「保存済みかどうか」は常に本人の視点のみで判定する
+        （パートナーがサプライズ保存していてもこのフラグは立たない）。
+      tags: [spots]
+      parameters:
+        - $ref: "#/components/parameters/SpotId"
+      responses:
+        "200":
+          description: スポット詳細
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpotDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  parameters:
+    SpotId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    Spot:
+      type: object
+      required: [id, name, area_id, category_id, average_rating]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        area_id:
+          type: integer
+        category_id:
+          type: integer
+        average_rating:
+          type: number
+          format: float
+          nullable: true
+          description: |
+            「1組のカップル/会員につき、1スポットあたり最新1件」のみを集計した平均
+            （doc/domain-model.md）。レビューが無ければ null
+
+    SpotDetail:
+      allOf:
+        - $ref: "#/components/schemas/Spot"
+        - type: object
+          required: [saved]
+          properties:
+            saved:
+              type: boolean
+              description: 本人が保存済みかどうか（本人視点のみ。パートナーのサプライズは含まない）
+
+    SpotList:
+      type: object
+      required: [spots, next_cursor]
+      properties:
+        spots:
+          type: array
+          items:
+            $ref: "#/components/schemas/Spot"
+        next_cursor:
+          type: string
+          nullable: true
+          description: 次ページが無ければ null
+
+    Problem:
+      type: object
+      description: RFC 9457 (Problem Details) 形式。doc/api-design.md「設計上の判断 4」参照
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        request_id:
+          type: string
+
+  responses:
+    BadRequest:
+      description: リクエストが不正
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    NotFound:
+      description: 対象が存在しない
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Problem"

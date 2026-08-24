@@ -36,7 +36,7 @@ description: PRの説明文をテンプレートに沿って生成する
 - **変更内容**: 変更したファイル・機能を箇条書き
 - **テスト計画**: backend / frontend の変更に応じてチェックボックスを残す（不要なものは削除）
 - **チェックリスト**: 以下の基準で必要な項目だけ残す
-  - API エンドポイント追加・変更 → `doc/api-design.md`（将来的には`openapi.yaml`）の更新項目を残す
+  - API エンドポイント追加・変更 → `doc/api-design.md`・`doc/api/openapi.yaml`の更新項目を残す
   - バックエンド変更 → `bundle exec rubocop -a` 実行項目を残す
   - フロントエンド変更 → テストコマンドは未確定（Vitest未導入、`.claude/rules/testing.md`参照）。導入後に実行項目を追記する
   - それ以外の項目は該当する場合のみ残す
