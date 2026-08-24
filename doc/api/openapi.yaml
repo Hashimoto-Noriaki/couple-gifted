@@ -17,6 +17,11 @@ info:
     スポット検索・詳細のみを定義している。他の窓口は doc/api-design.md の
     「エンドポイント一覧」を見ながら機能ごとに追記する。
 
+    ## idの型について
+    doc/er-and-db-design.md の通り主キーはuuidのため、id・area_id・category_id は
+    string（format: uuid）。SQLiteにネイティブなuuid型は無く、アプリ側（ApplicationRecord）
+    で生成する。
+
 servers:
   - url: /api/v1
 
@@ -37,20 +42,28 @@ paths:
           in: query
           description: 探す軸。エリアで絞り込む
           schema:
-            type: integer
+            type: string
+            format: uuid
         - name: category_id
           in: query
           description: 探す軸。カテゴリで絞り込む
           schema:
-            type: integer
+            type: string
+            format: uuid
         - name: scene
           in: query
-          description: 探す軸。利用シーンで絞り込む
+          description: |
+            探す軸。利用シーンで絞り込む。
+            ⚠️未実装：sceneはreviewsテーブルの属性でありスポット自体は持たないため、
+            reviewsとのjoinが必要。reviews導入後の別PRで対応する（現時点では無視される）
           schema:
             type: string
         - name: personalize
           in: query
-          description: 自分たち軸（ステージ・予算帯・子連れ訪問）をサーバ側で補完するか
+          description: |
+            自分たち軸（ステージ・予算帯・子連れ訪問）をサーバ側で補完するか。
+            ⚠️未実装：会員の判定に認証が要るため、認証導入後の別PRで対応する
+            （現時点では無視される）
           schema:
             type: boolean
             default: false
@@ -103,7 +116,8 @@ components:
       in: path
       required: true
       schema:
-        type: integer
+        type: string
+        format: uuid
 
   schemas:
     Spot:
@@ -111,13 +125,16 @@ components:
       required: [id, name, area_id, category_id, average_rating]
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         name:
           type: string
         area_id:
-          type: integer
+          type: string
+          format: uuid
         category_id:
-          type: integer
+          type: string
+          format: uuid
         average_rating:
           type: number
           format: float
