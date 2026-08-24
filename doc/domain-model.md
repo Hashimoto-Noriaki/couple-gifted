@@ -1,9 +1,9 @@
 # ドメイン設計
 
 - **最終更新**：2026-07-31
-- **前提ドキュメント**：`docs/requirements.md`、`docs/use-cases.md`、`docs/ubiquitous-language.md`
+- **前提ドキュメント**：`doc/requirements.md`、`doc/use-cases.md`、`doc/ubiquitous-language.md`
 - **本書の範囲**：対象物（モノ）と、それぞれに何ができるか（動詞）、守るべきこと（ルール）を決める。
-  テーブル・カラム・型・インデックスは `docs/er-and-db-design.md` で決める
+  テーブル・カラム・型・インデックスは `doc/er-and-db-design.md` で決める
 
 ---
 

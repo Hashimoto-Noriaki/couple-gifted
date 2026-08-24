@@ -1,7 +1,7 @@
 # 用語の統一（ユビキタス言語）
 
 - **最終更新**：2026-07-31
-- **対象**：`docs/requirements.md`、`docs/user-stories.md`、`docs/use-cases.md`
+- **対象**：`doc/requirements.md`、`doc/user-stories.md`、`doc/use-cases.md`
 - **本書の目的**：同じ言葉が場所によって別の意味で使われていないかを点検し、統一する
 
 > **重要：本書は一括置換の対象外とする。**

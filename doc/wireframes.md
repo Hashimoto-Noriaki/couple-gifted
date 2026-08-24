@@ -1,8 +1,9 @@
 # ワイヤーフレーム
 
 - **最終更新**：2026-07-31
-- **前提ドキュメント**：`docs/user-stories.md`、`docs/domain-model.md`、`docs/screen-flow.md`
-- **本書の範囲**：各画面に**何を、どの順で置くか**を決める。色・フォント・余白は `docs/design-principles.md` で決める
+- **前提ドキュメント**：`doc/user-stories.md`、`doc/domain-model.md`、`doc/screen-flow.md`
+- **本書の範囲**：各画面に**何を、どの順で置くか**を決める。色・フォント・余白（デザインシステム）は
+  未着手（`.claude/rules/frontend.md`の通り、実コンポーネントが増えてから検討する）
 
 ---
 
