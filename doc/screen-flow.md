@@ -1,8 +1,8 @@
 # 画面遷移図
 
 - **最終更新**：2026-07-31
-- **前提ドキュメント**：`docs/domain-model.md`、`docs/use-cases.md`
-- **本書の範囲**：どんな画面があり、どこからどこへ行けるかを決める。画面の中身は `docs/wireframes.md` で決める
+- **前提ドキュメント**：`doc/domain-model.md`、`doc/use-cases.md`
+- **本書の範囲**：どんな画面があり、どこからどこへ行けるかを決める。画面の中身は `doc/wireframes.md` で決める
 
 ---
 
@@ -134,7 +134,7 @@ flowchart TD
 
 ### 補助図
 
-FigJamで作成した配置図を `docs/images/screen-flow.png` に置く。
+FigJamで作成した配置図を `doc/images/screen-flow.png` に置く。
 **上のMermaidが正本**であり、以下は全体の配置を視覚的に把握するための補助である。
 遷移を変更した場合は、両方を更新すること。
 
