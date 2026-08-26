@@ -152,7 +152,8 @@ APIファーストはクライアントとサーバの契約に関する方針�
 ## エンドポイント一覧
 
 `doc/api/openapi.yaml` を先に書き、実装はそれに従う。以下はその一覧。
-（`doc/api/openapi.yaml`は機能ごとに順次追記する。現時点で定義済みなのはスポット検索・詳細のみ。決定事項ログ#21・#23）
+（`doc/api/openapi.yaml`は機能ごとに順次追記する。現時点で定義済みなのはスポット検索・詳細と、
+その絞り込みに使うマスタ（エリア・カテゴリ一覧）のみ。決定事項ログ#21・#23、issue #49）
 
 ### 認証・自分
 
@@ -254,6 +255,7 @@ APIファーストはクライアントとサーバの契約に関する方針�
 ### 4. エラーの形式を統一する
 
 RFC 9457（Problem Details）で統一し、`doc/api/openapi.yaml` に定義する。
+Content-Typeは`application/json`ではなく`application/problem+json`を返す（RFC 9457のメディア型）。
 
 ```json
 {

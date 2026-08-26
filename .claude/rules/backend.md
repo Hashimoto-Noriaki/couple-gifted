@@ -50,9 +50,10 @@ paths:
 - エラーレスポンスは**RFC 9457（Problem Details）**で統一する（`doc/api-design.md`で決定済み）。`{ error: "..." }`のような独自形式にしない
   - 例外：招待コードのエラーは理由を区別せず常に同じ`type`を返す（総当たり対策、決定事項）
 - HTTPステータスコードはセマンティクスに従う（200 / 201 / 204 / 400 / 401 / 403 / 404 / 409 / 422 / 500）
-- レスポンスはControllerで直接ハッシュを組み立てず、何らかのSerializer層を経由させる。具体的な手段（jbuilder / jsonapi-serializer等）は未決定。導入時に`doc/`へ根拠を残してから決める
+- レスポンスはControllerで直接ハッシュを組み立てず、何らかのSerializer層を経由させる。`app/serializers/`配下の素のRubyクラス（`#as_json`を持つPORO）を使う。jbuilder・jsonapi-serializer等のgemは未導入（導入する場合は`doc/`へ根拠を残してから決める）
 - `doc/api/openapi.yaml`をSSoTとし、`committee-rails`gemでリクエスト／レスポンスをスキーマ検証する（`spec/rails_helper.rb`に設定済み）。Request Specでは`assert_schema_conform`を使う
-  - ⚠️**未整備（Spot関連の最初のRequest Specを書くときに削除するTODO）**：`committee-rails`導入・`doc/api/openapi.yaml`雛形作成までは完了。まだ対応するController・Modelが無いため、実際にスキーマ検証を通したRequest Specは0件。CIでスキーマと実装のドリフトを検知する仕組みも未整備
+  - `committee_options`の`prefix: '/api/v1'`は必須（`openapi.yaml`の`servers.url`はcommitteeが自動参照しないため）。無いと全リクエストが`undefined in schema`で失敗する
+  - ⚠️未整備：CIでスキーマと実装のドリフトを検知する仕組みは無い（手元で`bundle exec rspec`を通す運用）
 
 ## 管理画面（APIを経由しない）
 
@@ -93,7 +94,11 @@ docker compose down
 
 ## つまずきやすい点
 
-- Request Specが全部403になる場合、`config/environments/test.rb`の`config.hosts`を確認する
+- Request Specが全部403（Blocked hosts）になる場合、`config/environments/test.rb`の`config.hosts`ではなく
+  `RAILS_ENV`を疑う。`docker-compose.yml`はコンテナ全体に`RAILS_ENV=development`を設定しているため、
+  `spec/rails_helper.rb`が`ENV['RAILS_ENV'] ||= 'test'`のままだとdevelopment設定（`config.hosts`のdefault
+  許可リストにテスト時のHostが含まれない）でRequest Specが動いてしまう。`ENV['RAILS_ENV'] = 'test'`と
+  強制上書きする（設定済み）
 - `doc/api/openapi.yaml`は`openapi: 3.0.3`で書く。`committee` gem（5.6.3時点）がOpenAPI 3.1系に未対応
   （`Committee::OpenAPI3Unsupported`で例外になる）ため
 - `doc/`はコンテナ内で`/doc`（`/rails`ではなくコンテナルート直下、read-only）。`Rails.root.join('..', 'doc', ...)`で参照する

@@ -1,6 +1,10 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
+# ||= ではなく強制的にtestへ上書きする。docker-compose.ymlはコンテナ全体にRAILS_ENV=developmentを
+# 設定している（bin/rails server・console用）ため、||=だと既存のdevelopment設定を引き継いでしまい、
+# config/environments/test.rbが読まれずdevelopment DB・development設定でRequest Specが実行される
+# （.claude/rules/backend.md「つまずきやすい点」）。
+ENV['RAILS_ENV'] = 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
@@ -80,7 +84,10 @@ RSpec.configure do |config|
   config.add_setting :committee_options
   config.committee_options = {
     schema_path: Rails.root.join('..', 'doc', 'api', 'openapi.yaml').to_s,
-    strict_reference_validation: true
+    strict_reference_validation: true,
+    # openapi.yamlのservers.url（/api/v1）に対応するプレフィックス。committeeはservers:を
+    # 自動では見ないため明示する（config/routes.rbのnamespace :api, :v1と対応）
+    prefix: '/api/v1'
   }
   config.include Committee::Rails::Test::Methods, type: :request
 end

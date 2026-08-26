@@ -13,9 +13,9 @@ info:
     committeeが3.1に対応したら見直す。
 
     ## 未整備（実装が進むにつれて拡充する）
-    現時点では doc/requirements.md のスケジュール（Week 3-4 縦串貫通）に沿って、
-    スポット検索・詳細のみを定義している。他の窓口は doc/api-design.md の
-    「エンドポイント一覧」を見ながら機能ごとに追記する。
+    現時点では doc/requirements.md のスケジュール（Week 3-4 縦串貫通、issue #49）に沿って、
+    スポット検索・詳細と、その絞り込みに使うマスタ（エリア・カテゴリ一覧）のみを定義している。
+    他の窓口は doc/api-design.md の「エンドポイント一覧」を見ながら機能ごとに追記する。
 
     ## idの型について
     doc/er-and-db-design.md の通り主キーはuuidのため、id・area_id・category_id は
@@ -109,6 +109,40 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /areas:
+    get:
+      operationId: listAreas
+      summary: エリア一覧を見る
+      description: |
+        絞り込み（spots.area_id）に使うエリアのマスタを返す。doc/er-and-db-design.md の通り
+        parent_id による親子構造（例：「渋谷エリア」の子に「代官山」「恵比寿」）を持つが、
+        レスポンスはフラットな配列で返す。階層はクライアント側が parent_id を辿って組み立てる
+        （件数が少ないマスタのため、ページングは無い）。
+      tags: [areas]
+      responses:
+        "200":
+          description: エリア一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AreaList"
+
+  /categories:
+    get:
+      operationId: listCategories
+      summary: カテゴリ一覧を見る
+      description: |
+        絞り込み（spots.category_id）に使うカテゴリのマスタを返す
+        （件数が少ないマスタのため、ページングは無い）。
+      tags: [categories]
+      responses:
+        "200":
+          description: カテゴリ一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryList"
+
 components:
   parameters:
     SpotId:
@@ -122,7 +156,7 @@ components:
   schemas:
     Spot:
       type: object
-      required: [id, name, area_id, category_id, average_rating]
+      required: [id, name, area_id, category_id, average_rating, reviews_count]
       properties:
         id:
           type: string
@@ -142,6 +176,9 @@ components:
           description: |
             「1組のカップル/会員につき、1スポットあたり最新1件」のみを集計した平均
             （doc/domain-model.md）。レビューが無ければ null
+        reviews_count:
+          type: integer
+          description: 平均評価に数えられているレビューの件数（★の横に添える件数表示に使う）
 
     SpotDetail:
       allOf:
@@ -151,7 +188,59 @@ components:
           properties:
             saved:
               type: boolean
-              description: 本人が保存済みかどうか（本人視点のみ。パートナーのサプライズは含まない）
+              description: |
+                本人が保存済みかどうか（本人視点のみ。パートナーのサプライズは含まない）。
+                ⚠️未実装：認証導入前は本人を判定できないため、常に false を返す
+                （認証導入後の別PRで対応する）
+
+    Area:
+      type: object
+      required: [id, name, parent_id, position]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 親エリアのid。最上位エリアは null
+        position:
+          type: integer
+          description: 表示順
+
+    AreaList:
+      type: object
+      required: [areas]
+      properties:
+        areas:
+          type: array
+          items:
+            $ref: "#/components/schemas/Area"
+
+    Category:
+      type: object
+      required: [id, name, position]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        position:
+          type: integer
+          description: 表示順
+
+    CategoryList:
+      type: object
+      required: [categories]
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
 
     SpotList:
       type: object
@@ -185,12 +274,12 @@ components:
     BadRequest:
       description: リクエストが不正
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
     NotFound:
       description: 対象が存在しない
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
