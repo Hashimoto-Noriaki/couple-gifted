@@ -90,6 +90,7 @@ RSpec.describe "GET /api/v1/spots", type: :request do
       get "/api/v1/spots", params: { cursor: "not-a-valid-cursor" }
 
       assert_schema_conform(400)
+      expect(response.media_type).to eq("application/problem+json")
       body = response.parsed_body
       expect(body["status"]).to eq(400)
       expect(body["title"]).to be_present
@@ -104,12 +105,14 @@ RSpec.describe "GET /api/v1/spots", type: :request do
       get "/api/v1/spots", params: { cursor: [ "a", "b" ] }
 
       assert_response_schema_confirm(400)
+      expect(response.media_type).to eq("application/problem+json")
     end
 
     it "limitが配列（limit[]=1&limit[]=2）で送られても500ではなく400を返す" do
       get "/api/v1/spots", params: { limit: [ "1", "2" ] }
 
       assert_response_schema_confirm(400)
+      expect(response.media_type).to eq("application/problem+json")
     end
   end
 end

@@ -29,12 +29,14 @@ RSpec.describe "GET /api/v1/spots/:id", type: :request do
     get "/api/v1/spots/#{spot.id}"
 
     assert_schema_conform(404)
+    expect(response.media_type).to eq("application/problem+json")
   end
 
   it "存在しないidは404（Problem Details）を返す" do
     get "/api/v1/spots/#{SecureRandom.uuid}"
 
     assert_schema_conform(404)
+    expect(response.media_type).to eq("application/problem+json")
     body = response.parsed_body
     expect(body["status"]).to eq(404)
     expect(body["title"]).to be_present
