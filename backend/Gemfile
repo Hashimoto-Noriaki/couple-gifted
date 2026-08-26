@@ -36,6 +36,12 @@ gem "image_processing", "~> 1.2"
 # gem "rack-cors"
 
 group :development, :test do
+  # doc/api/openapi.yamlをブラウザで閲覧するSwagger UI（APIファースト開発の補助）。
+  # HTTPエンドポイントとしての公開はdevelopment限定（config/routes.rb・config/initializers/rswag_ui.rbで
+  # Rails.env.development?分岐、認証機構が無いため本番非公開）。testグループに含めるのはgem自体の読み込みのみ
+  # （spec/requests/api_docs_spec.rbでRails.envをdevelopmentに見せかけてルーティングを検証するため）
+  gem "rswag-ui"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
