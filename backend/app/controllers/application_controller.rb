@@ -11,7 +11,9 @@ class ApplicationController < ActionController::API
         status: Rack::Utils::SYMBOL_TO_STATUS_CODE.fetch(status),
         request_id: request.request_id
       ).as_json,
-      status: status
+      status: status,
+      # RFC 9457のメディア型。application/jsonではない（doc/api-design.md「設計上の判断 4」）
+      content_type: "application/problem+json"
     )
   end
 

@@ -274,12 +274,12 @@ components:
     BadRequest:
       description: リクエストが不正
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
     NotFound:
       description: 対象が存在しない
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"

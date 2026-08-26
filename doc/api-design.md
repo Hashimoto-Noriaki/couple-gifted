@@ -255,6 +255,7 @@ APIファーストはクライアントとサーバの契約に関する方針�
 ### 4. エラーの形式を統一する
 
 RFC 9457（Problem Details）で統一し、`doc/api/openapi.yaml` に定義する。
+Content-Typeは`application/json`ではなく`application/problem+json`を返す（RFC 9457のメディア型）。
 
 ```json
 {
