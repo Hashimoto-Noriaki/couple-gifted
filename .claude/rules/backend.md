@@ -54,6 +54,10 @@ paths:
 - `doc/api/openapi.yaml`をSSoTとし、`committee-rails`gemでリクエスト／レスポンスをスキーマ検証する（`spec/rails_helper.rb`に設定済み）。Request Specでは`assert_schema_conform`を使う
   - `committee_options`の`prefix: '/api/v1'`は必須（`openapi.yaml`の`servers.url`はcommitteeが自動参照しないため）。無いと全リクエストが`undefined in schema`で失敗する
   - ⚠️未整備：CIでスキーマと実装のドリフトを検知する仕組みは無い（手元で`bundle exec rspec`を通す運用）
+- `doc/api/openapi.yaml`は`/api-docs`（Swagger UI、`rswag-ui`gem）でも閲覧できる。`/api/v1/`配下ではないため上記のRFC 9457等のドメイン規約対象外（管理画面と同じ扱い）
+  - HTTPエンドポイントとしての公開はdevelopment限定（`config/routes.rb`・`config/initializers/rswag_ui.rb`は`Rails.env.development?`で分岐）。認証機構が未実装のため、本番公開するとAPIスキーマ全体が誰でも閲覧できてしまう
+  - `doc/api/openapi.yaml`を生ファイルのまま返すだけ（`app/controllers/api_docs_controller.rb`）。パスは`config/initializers/openapi.rb`で一元管理し、`spec/rails_helper.rb`のcommittee_optionsと共有する（SSoTは変わらず`doc/api/openapi.yaml`）
+  - gem自体は`group :development, :test`（`Gemfile`）。testグループにも含めるのは、`spec/requests/api_docs_spec.rb`で`Rails.env`をdevelopmentに見せかけてルーティングを検証するため（HTTP公開範囲とは別の話）
 
 ## 管理画面（APIを経由しない）
 
