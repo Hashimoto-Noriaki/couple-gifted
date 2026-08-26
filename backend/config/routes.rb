@@ -12,4 +12,10 @@ Rails.application.routes.draw do
       resources :categories, only: %i[index]
     end
   end
+
+  # Swagger UI（development限定。認証機構が無いため本番非公開。.claude/rules/backend.md参照）
+  if Rails.env.development?
+    get "api-docs/openapi.yaml" => "api_docs#openapi"
+    mount Rswag::Ui::Engine => "/api-docs"
+  end
 end

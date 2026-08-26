@@ -83,7 +83,8 @@ RSpec.configure do |config|
   # Request Spec内で assert_schema_conform(status) / assert_request_schema_confirm / assert_response_schema_confirm を使う。
   config.add_setting :committee_options
   config.committee_options = {
-    schema_path: Rails.root.join('..', 'doc', 'api', 'openapi.yaml').to_s,
+    # パスはconfig/initializers/openapi.rbで一元管理（Swagger UIのapi_docs_controller.rbと共通）
+    schema_path: Rails.application.config.x.openapi_schema_path.to_s,
     strict_reference_validation: true,
     # openapi.yamlのservers.url（/api/v1）に対応するプレフィックス。committeeはservers:を
     # 自動では見ないため明示する（config/routes.rbのnamespace :api, :v1と対応）
