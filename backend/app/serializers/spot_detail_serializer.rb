@@ -5,7 +5,7 @@ class SpotDetailSerializer < SpotSerializer
   end
 
   def as_json(*)
-    super.merge(saved: saved)
+    super.merge(saved: saved, address: spot.address)
   end
 
   private

@@ -184,7 +184,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/Spot"
         - type: object
-          required: [saved]
+          required: [saved, address]
           properties:
             saved:
               type: boolean
@@ -192,6 +192,11 @@ components:
                 本人が保存済みかどうか（本人視点のみ。パートナーのサプライズは含まない）。
                 ⚠️未実装：認証導入前は本人を判定できないため、常に false を返す
                 （認証導入後の別PRで対応する）
+            address:
+              type: string
+              description: |
+                スポットの住所。「行くかどうかを判断したい」（doc/wireframes.md②）ために
+                詳細画面のみで返す（一覧では返さない）
 
     Area:
       type: object
