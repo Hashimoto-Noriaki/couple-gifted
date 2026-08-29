@@ -14,6 +14,15 @@ RSpec.describe "GET /api/v1/spots/:id", type: :request do
     expect(body["reviews_count"]).to eq(5)
   end
 
+  it "住所を返す（行くかどうかを判断するための情報）" do
+    spot = create(:spot, address: "東京都渋谷区代官山町1-1")
+
+    get "/api/v1/spots/#{spot.id}"
+
+    assert_schema_conform(200)
+    expect(response.parsed_body["address"]).to eq("東京都渋谷区代官山町1-1")
+  end
+
   it "未認証（ゲスト）では常にsaved: falseを返す（doc/api/openapi.yaml：認証導入前は本人を判定できない）" do
     spot = create(:spot)
 
