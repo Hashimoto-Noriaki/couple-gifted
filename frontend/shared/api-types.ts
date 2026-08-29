@@ -122,6 +122,11 @@ export interface components {
              *     （認証導入後の別PRで対応する）
              */
             saved: boolean;
+            /**
+             * @description スポットの住所。「行くかどうかを判断したい」（doc/wireframes.md②）ために
+             *     詳細画面のみで返す（一覧では返さない。doc/api-design.md「設計上の判断」参照）
+             */
+            address: string;
         };
         Area: {
             /** Format: uuid */
