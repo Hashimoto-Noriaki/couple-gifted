@@ -26,3 +26,6 @@
 - [API設計](./doc/api-design.md) / [OpenAPIスキーマ](./doc/api/openapi.yaml)
 - [画面遷移図](./doc/screen-flow.md) / [ワイヤーフレーム](./doc/wireframes.md)
 - [Claude Codeの設定ガイド（CLAUDE.md・.claude/）](./doc/claude-code-guide.md)
+
+## POC
+https://github.com/Hashimoto-Noriaki/couple-gifted-poc
