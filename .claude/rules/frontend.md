@@ -88,7 +88,7 @@ pnpm format        # フォーマットのみ
 pnpm type-check    # tsc --noEmit（型チェックのみ、出力しない）
 ```
 
-CIでは`frontend_check` job（`.github/workflows/ci.yml`）で`pnpm check`・`pnpm type-check`を実行する。
+CIでは`frontend_check` job（`.github/workflows/ci.yml`）で`pnpm check`・`pnpm type-check`・`pnpm test`を実行する。
 
 ## Storybook
 
