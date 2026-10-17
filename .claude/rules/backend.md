@@ -90,7 +90,7 @@ docker compose down
 
 ## Lint・セキュリティ
 
-⚠️`backend/.github/workflows/ci.yml`はリポジトリルートの`.github/workflows/`ではない場所に置かれているためGitHub Actionsに認識されず、実行履歴0件（未整備。`.claude/rules/git.md`参照）。**CIでは自動実行されない**ため、コミット前に手元で実行する。
+CI（リポジトリルートの`.github/workflows/ci.yml`、`.claude/rules/git.md`参照）の`scan_ruby`・`lint`jobで以下が自動実行される。CIで落ちる前に手元でも実行する。
 
 - `bin/rubocop -f github`（rubocop-rails-omakase）
 - `bin/brakeman --no-pager`
@@ -107,3 +107,7 @@ docker compose down
   （`Committee::OpenAPI3Unsupported`で例外になる）ため
 - `doc/`はコンテナ内で`/doc`（`/rails`ではなくコンテナルート直下、read-only）。`Rails.root.join('..', 'doc', ...)`で参照する
   （`docker-compose.yml`の`./doc:/doc:ro`マウント、`spec/rails_helper.rb`の`committee_options`参照）
+- CIの`scan_ruby`が`Brakeman X is not the latest version Y`（exit code 5）で落ちる場合、コードの問題ではない。
+  `bin/brakeman`が`--ensure-latest`付きのため、Brakemanの新バージョンがリリースされた時点で落ちる。
+  `docker compose exec api bundle update brakeman`で`Gemfile.lock`を更新し、`chore:`のPRにする（例：PR #69）。
+  `--ensure-latest`は外さない（スキャナが古いまま動き続けるため）。恒久対応はDependabot（#70）
