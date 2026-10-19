@@ -10,7 +10,7 @@ paths:
 ## 開発の進め方
 
 - **スキーマファースト**：叩くAPIは`doc/api-design.md`・`doc/api/openapi.yaml`に定義されているものだけを使う。ここに無いエンドポイントを先回りして実装しない
-  - ⚠️**未整備（実装開始時に削除するTODO）**：`openapi-typescript`はまだpackage.jsonに無い。型生成の仕組みはまだ無く、手書きの型で代用せざるを得ない。最初にAPIを呼ぶ実装をするときに導入する
+  - APIの型は`openapi-typescript`で`doc/api/openapi.yaml`から生成した`shared/api-types.ts`を使う。手書きの型を置かない。`openapi.yaml`を更新したら`pnpm api-types:generate`で再生成する（生成物は手で編集しない）
 - 実コンポーネントを作るときは`.stories.tsx`も併せて作る（Storybook導入済み）
 - デザインシステム（トークン化）は保留中。実コンポーネントが増えて繰り返しパターンが見えてから検討する
 
@@ -59,7 +59,8 @@ frontend/
 
 コロケーション・拡張子（`.spec.tsx`）・カバレッジ方針・何を優先してテストするかは`.claude/rules/testing.md`を参照。
 
-- テストランナーはVitestを導入予定（未確定）。導入が決まったらコマンドをここに追記する
+- **TDDはしない**（backendのみ）。テストは実装の後に、hooks・整形ロジック・認証まわり等に絞って書く
+- テストランナーはVitest。`pnpm test`（1回実行）・`pnpm test:watch`・`pnpm test:coverage`
 
 ## 用語（`doc/ubiquitous-language.md`準拠）
 

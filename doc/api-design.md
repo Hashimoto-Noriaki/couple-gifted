@@ -277,7 +277,7 @@ Content-Typeは`application/json`ではなく`application/problem+json`を返す
 
 - `doc/api/openapi.yaml` をSSoTとする
 - Rails側は committee-rails でリクエスト／レスポンスを検証（`backend/spec/rails_helper.rb`で設定）
-- Next.js側は openapi-typescript で型を生成する。**手書きの型をフロントに置かない**（未導入）
+- Next.js側は openapi-typescript で型を生成する（`frontend/shared/api-types.ts`、`pnpm api-types:generate`）。**手書きの型をフロントに置かない**
 - CIでスキーマと実装のドリフトを検知し、外れたら落とす（未整備）
 
 ---
