@@ -1,6 +1,7 @@
 import type { components, operations } from "@/shared/api-types";
 
 type SpotList = components["schemas"]["SpotList"];
+type SpotDetail = components["schemas"]["SpotDetail"];
 type AreaList = components["schemas"]["AreaList"];
 type CategoryList = components["schemas"]["CategoryList"];
 type ListSpotsQuery = NonNullable<
@@ -33,6 +34,19 @@ export function listSpots(query: ListSpotsQuery = {}): Promise<SpotList> {
   }
   const qs = params.toString();
   return getJson<SpotList>(qs ? `/spots?${qs}` : "/spots");
+}
+
+// 存在しないidならnullを返す（呼び出し側でnotFound()にする）
+export async function getSpot(id: string): Promise<SpotDetail | null> {
+  const path = `/spots/${encodeURIComponent(id)}`;
+  const res = await fetch(`${apiBaseUrl()}${path}`);
+  if (res.status === 404) {
+    return null;
+  }
+  if (!res.ok) {
+    throw new Error(`GET ${path} が失敗しました（${res.status}）`);
+  }
+  return res.json() as Promise<SpotDetail>;
 }
 
 export function listAreas(): Promise<AreaList> {
