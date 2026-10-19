@@ -32,7 +32,7 @@
 
 ## 開発の進め方
 
-- **TDD**：Specを先に書いてから実装する。カバレッジ方針・対象範囲の考え方は`.claude/rules/testing.md`を参照
+- **TDD（backendのみ）**：Specを先に書いてから実装する。frontendはUIの変更が激しいためTDDの対象外で、ロジック・認証まわりに絞って実装後にテストを書く。カバレッジ方針・対象範囲の考え方は`.claude/rules/testing.md`を参照
 - **スキーマファースト**：エンドポイントを追加・変更するときは、先に`doc/api-design.md`・`doc/api/openapi.yaml`を更新してから実装する。フロント・バック双方とも、ここに無いエンドポイントを先に実装しない
 - Controllerは薄く。ロジックはModel（将来的にServiceが必要になったら導入）に書く
 - N+1クエリを放置しない
