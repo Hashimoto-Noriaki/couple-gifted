@@ -19,7 +19,8 @@ paths:
 - **読み取り**（検索・一覧・詳細）はServer Componentで`fetch`する。絞り込み・ページングは`searchParams`でURLを変え、Server Componentが再取得する形にする
 - **書き込み**（投稿・保存・連携解除・通報など）はServer Actionsを使う。ブラウザから直接`fetch`するコードは書かない
 - Client Componentは「操作を受け取ってServer Actionを呼ぶ」「Server Componentから渡されたデータを表示する」役割に限定する
-- Rails APIを呼ぶコードをどこに置くか（境界層を作るか、featureごとに置くか等）はまだ決めない。最初の実装で必要になった時点で、実際のコード量を見て判断する
+- Rails APIを呼ぶコードは**featureごとに`features/<feature>/api.ts`へ置く**（#59で決定）。共通の境界層は作らない。ベースURL・エラー処理などの共通部分が複数featureで重複してきたら、そのとき`shared/`へ出す
+- RailsのベースURLは環境変数`API_BASE_URL`（`frontend/.env.local`）。ローカルではRailsが3000番を使うため、Next.jsのdevは3001番で起動する
 - **クライアント側のキャッシュ戦略は未定**。TanStack Queryの導入を予定しているが、用途（Server Actionsにかぶせるのか、特定機能でRails APIを直接叩くのか）は未決定。ここで断定しない。方針が決まったら追記する
 - **環境変数**：`NEXT_PUBLIC_`プレフィックスを付けた値はブラウザに露出する。秘密情報（APIキー等）には付けない。上記の通りRails APIへの呼び出しはServer Component/Server Actionに限定しているため、本来`NEXT_PUBLIC_`が必要になる場面はほぼ無いはず。使いたくなったら、この境界の設計が破られていないか疑う
 

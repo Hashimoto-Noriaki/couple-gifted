@@ -2,11 +2,19 @@
 
 ## Getting Started
 
+Rails API（docker compose、3000番）を先に起動し、`frontend/.env.local` にAPIのベースURLを書いておく。
+Rails APIはServer Componentからだけ呼ぶため、`NEXT_PUBLIC_`は付けない。
+
+```bash
+# frontend/.env.local
+API_BASE_URL=http://localhost:3000/api/v1
+```
+
 ```bash
 pnpm dev
 ```
 
-[http://localhost:3000](http://localhost:3000) をブラウザで開くと確認できます。
+Railsと衝突しないよう3001番で起動する。[http://localhost:3001](http://localhost:3001) をブラウザで開くと確認できます。
 
 ## Lint & Format
 
@@ -28,7 +36,7 @@ pnpm format
 
 ## Storybook
 
-UIコンポーネントを個別に開発・確認するために [Storybook](https://storybook.js.org) を使用しています。Storyファイルは `app/` 配下のコンポーネントと同じ場所に置きます（`*.stories.tsx`）。
+UIコンポーネントを個別に開発・確認するために [Storybook](https://storybook.js.org) を使用しています。Storyファイルは `app/`・`features/` 配下のコンポーネントと同じ場所に置きます（`*.stories.tsx`）。
 
 ```bash
 # Storybookを起動（http://localhost:6006）
