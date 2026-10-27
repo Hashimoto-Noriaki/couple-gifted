@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { listAreas, listCategories, listSpotPages } from "./api";
-import { FilterSheet } from "./FilterSheet";
-import { Header } from "./Header";
-import { SpotCard } from "./SpotCard";
+import { FilterSheet } from "./components/FilterSheet";
+import { Header } from "./components/Header";
+import { SpotCard } from "./components/SpotCard";
 import {
   groupAreas,
   hasConditions,
@@ -13,7 +13,7 @@ import {
   spotListHref,
   toggleArea,
   toggleCategory,
-} from "./spotFilter";
+} from "./lib/spotFilter";
 
 type SpotListPageProps = {
   searchParams: RawSearchParams;

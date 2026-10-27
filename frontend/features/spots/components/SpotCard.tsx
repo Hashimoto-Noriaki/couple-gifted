@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatRating } from "./formatRating";
+import { formatRating } from "../lib/formatRating";
 
 type SpotCardProps = {
   // 一覧の絞り込み条件を引き継いだ詳細のURL（spotDetailHref）

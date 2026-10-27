@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { getSpot, listAreas, listCategories } from "./api";
-import { formatRating } from "./formatRating";
-import { Header } from "./Header";
+import { Header } from "./components/Header";
+import { formatRating } from "./lib/formatRating";
 import {
   parseSpotFilter,
   type RawSearchParams,
   spotListHref,
-} from "./spotFilter";
+} from "./lib/spotFilter";
 
 type SpotDetailPageProps = {
   id: string;

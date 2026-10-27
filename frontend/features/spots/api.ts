@@ -37,7 +37,7 @@ export function listSpots(query: ListSpotsQuery = {}): Promise<SpotList> {
   return getJson<SpotList>(qs ? `/spots?${qs}` : "/spots");
 }
 
-// 「もっと見る」はURLのpagesで表すため、先頭からpagesページ分をnext_cursorで辿って取得する（spotFilter.ts参照）
+// 「もっと見る」はURLのpagesで表すため、先頭からpagesページ分をnext_cursorで辿って取得する（lib/spotFilter.ts参照）
 export async function listSpotPages(
   query: Omit<ListSpotsQuery, "cursor">,
   pages: number,
