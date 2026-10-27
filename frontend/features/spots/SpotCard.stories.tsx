@@ -6,7 +6,7 @@ const meta = {
   title: "spots/SpotCard",
   component: SpotCard,
   args: {
-    id: "00000000-0000-0000-0000-000000000001",
+    href: "/spots/00000000-0000-0000-0000-000000000001",
     name: "茶房 ひより",
     areaName: "代官山",
     categoryName: "カフェ",

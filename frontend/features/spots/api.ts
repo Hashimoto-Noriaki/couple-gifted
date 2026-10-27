@@ -1,5 +1,6 @@
 import type { components, operations } from "@/shared/api-types";
 
+type Spot = components["schemas"]["Spot"];
 type SpotList = components["schemas"]["SpotList"];
 type SpotDetail = components["schemas"]["SpotDetail"];
 type AreaList = components["schemas"]["AreaList"];
@@ -34,6 +35,24 @@ export function listSpots(query: ListSpotsQuery = {}): Promise<SpotList> {
   }
   const qs = params.toString();
   return getJson<SpotList>(qs ? `/spots?${qs}` : "/spots");
+}
+
+// 「もっと見る」はURLのpagesで表すため、先頭からpagesページ分をnext_cursorで辿って取得する（spotFilter.ts参照）
+export async function listSpotPages(
+  query: Omit<ListSpotsQuery, "cursor">,
+  pages: number,
+): Promise<{ spots: Spot[]; hasMore: boolean }> {
+  const spots: Spot[] = [];
+  let cursor: string | undefined;
+  for (let i = 0; i < pages; i++) {
+    const page = await listSpots({ ...query, cursor });
+    spots.push(...page.spots);
+    if (page.next_cursor === null) {
+      return { spots, hasMore: false };
+    }
+    cursor = page.next_cursor;
+  }
+  return { spots, hasMore: true };
 }
 
 // 存在しないidならnullを返す（呼び出し側でnotFound()にする）
