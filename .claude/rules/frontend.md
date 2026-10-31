@@ -11,7 +11,7 @@ paths:
 
 - **スキーマファースト**：叩くAPIは`doc/api-design.md`・`doc/api/openapi.yaml`に定義されているものだけを使う。ここに無いエンドポイントを先回りして実装しない
   - APIの型は`openapi-typescript`で`doc/api/openapi.yaml`から生成した`shared/api-types.ts`を使う。手書きの型を置かない。`openapi.yaml`を更新したら`pnpm api-types:generate`で再生成する（生成物は手で編集しない）
-- 実コンポーネントを作るときは`.stories.tsx`も併せて作る（Storybook導入済み）
+- `.stories.tsx`は**対象のコンポーネントと同じ階層**に置く（例：`features/spots/components/SpotCard.tsx`の隣に`SpotCard.stories.tsx`）。Storyを作るのは部品（`components/`）だけで、画面（`SpotListPage`等）には作らない
 - デザインシステム（トークン化）は保留中。実コンポーネントが増えて繰り返しパターンが見えてから検討する
 
 ## データフェッチ
@@ -46,8 +46,19 @@ frontend/
 └── shared/               # 複数featuresで使う純粋なUI・utils・型
 ```
 
-- 1つのfeature内部の粒度（`components/`・`hooks/`・API呼び出しの置き場所等）はまだ決めない。実コードが増えてから判断する（横断ルールの「過剰なディレクトリ設計は禁止」に従う）
-  - 検討中の候補：features/内の`components/`を`client/`・`server/`で分ける（理由：機能単位のコンポーネントは「ドメインデータを取得する（Server）」か「ユーザー操作を受ける（Client）」かで性質が分かれることが多いため）。ただし実物のコンポーネントが無い段階での先回りなので、最初のfeatureを書くときに決める
+- 1つのfeature内部は**役割で分ける**（`features/spots/`のファイルが増えた時点で決定）。新しいfeatureも、ファイルが少ないうちは直下に置き、増えてからこの形に分ける（横断ルールの「過剰なディレクトリ設計は禁止」に従う）
+
+  ```bash
+  features/spots/
+  ├── SpotListPage.tsx   # 画面。app/から呼ぶ入口（Server Componentのレンダリングをテストする）
+  ├── api.ts             # Rails APIの呼び出し
+  ├── components/        # 画面の部品（Storybookで確認する側）
+  └── lib/               # 表示用の純粋なロジック（Vitestで確認する側）
+  ```
+
+  - `client/`・`server/`で分ける案は採らない。最初のfeatureでClient Componentが1つ（`FilterSheet`）しかなく、ディレクトリにするほどの量が無いため
+  - 画面ごと（`list/`・`detail/`）に分ける案も採らない。絞り込み条件・ヘッダー・評価表示を一覧と詳細の両方で使い、結局共通の置き場が要るため
+  - `hooks/`はカスタムフックが実際に出てきたときに足す
 - Next.js自体が別DB（セッション・BFFキャッシュ等）を持つかどうかも未確定。backend側の認証方式が決まる前に、フロント側のセッション管理層を先に設計しない
 
 ## コンポーネント設計

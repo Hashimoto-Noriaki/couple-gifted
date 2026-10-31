@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { formatRating } from "./formatRating";
+import { formatRating } from "../lib/formatRating";
 
 type SpotCardProps = {
-  id: string;
+  // 一覧の絞り込み条件を引き継いだ詳細のURL（spotDetailHref）
+  href: string;
   name: string;
   areaName: string;
   categoryName: string;
@@ -12,7 +13,7 @@ type SpotCardProps = {
 
 // カード全体をタップ領域にする（v0の「詳細を見る →」は採らない。doc/wireframes.md①）
 export function SpotCard({
-  id,
+  href,
   name,
   areaName,
   categoryName,
@@ -21,7 +22,7 @@ export function SpotCard({
 }: SpotCardProps) {
   return (
     <Link
-      href={`/spots/${id}`}
+      href={href}
       className="block rounded-2xl border border-zinc-200 p-5 transition-colors hover:bg-zinc-50"
     >
       <h2 className="font-bold text-lg">{name}</h2>

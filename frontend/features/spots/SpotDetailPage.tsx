@@ -1,13 +1,23 @@
 import { notFound } from "next/navigation";
 import { getSpot, listAreas, listCategories } from "./api";
-import { formatRating } from "./formatRating";
-import { Header } from "./Header";
+import { Header } from "./components/Header";
+import { formatRating } from "./lib/formatRating";
+import {
+  parseSpotFilter,
+  type RawSearchParams,
+  spotListHref,
+} from "./lib/spotFilter";
 
 type SpotDetailPageProps = {
   id: string;
+  // 一覧から引き継いだ絞り込み条件。「＜」の戻り先に使う（doc/wireframes.md②）
+  searchParams: RawSearchParams;
 };
 
-export async function SpotDetailPage({ id }: SpotDetailPageProps) {
+export async function SpotDetailPage({
+  id,
+  searchParams,
+}: SpotDetailPageProps) {
   const [spot, { areas }, { categories }] = await Promise.all([
     getSpot(id),
     listAreas(),
@@ -22,8 +32,7 @@ export async function SpotDetailPage({ id }: SpotDetailPageProps) {
 
   return (
     <div className="mx-auto w-full max-w-md px-4">
-      {/* 絞り込み条件を残す戻り先は、絞り込みを実装するPRで対応する */}
-      <Header backHref="/spots" />
+      <Header backHref={spotListHref(parseSpotFilter(searchParams))} />
       <main className="py-6">
         <h1 className="font-bold text-2xl">{spot.name}</h1>
         <p className="mt-3 text-zinc-500">
