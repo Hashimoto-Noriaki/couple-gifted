@@ -4,6 +4,7 @@
 
 - トランクベース。`master`が唯一のメインブランチ
 - CIは`.github/workflows/ci.yml`（リポジトリルート）。`backend`はモノレポのサブディレクトリなので、Ruby関連のjob（`scan_ruby`・`lint`・`test`）は`working-directory: backend`を指定している
+  - gemの脆弱性チェック（bundler-audit）は`.github/workflows/bundler-audit.yml`に分離（週1・Gemfile変更時のみ）。依存の更新PRはDependabot（`.github/dependabot.yml`）が`chore:`で作る
 - ブランチ名は `<prefix>/<kebab-case説明>`。prefixはコミット・PRと同じ語彙（`feat` / `test` / `fix` / `chore` / `refactor` / `docs`）を使う
   - 例：`feat/review-post`、`fix/n-plus-one`、`chore/harness-rules`
   - 過去に`doc/xxx`表記のブランチがあるが、コミットプレフィックスは`docs`なので今後は`docs/`に揃える
