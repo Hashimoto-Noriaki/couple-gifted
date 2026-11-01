@@ -1,0 +1,49 @@
+# Dependabot 設定（#70）
+# ドキュメント: https://docs.github.com/ja/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+#
+# - 脆弱性の修正PR（security updates）はリポジトリ設定で有効化しており、脆弱性が出た時点で随時作られる
+# - ここで設定しているのは通常のバージョン更新PR。PRが来すぎないよう、週1回・ecosystemごとに1つのPRにまとめる
+# - コミット・PRタイトルは .claude/rules/git.md の規則に揃えて `chore:` にする
+version: 2
+updates:
+  # backend の gem（Brakeman を含む。bin/brakeman が --ensure-latest 付きのため、新版が出ると CI が落ちる）
+  - package-ecosystem: "bundler"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "chore"
+    groups:
+      bundler:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # frontend のパッケージ（pnpm-lock.yaml も npm ecosystem で扱われる）
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "chore"
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # .github/workflows/ の actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "chore"
+    groups:
+      github-actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

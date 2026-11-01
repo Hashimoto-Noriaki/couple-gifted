@@ -94,7 +94,11 @@ CI（リポジトリルートの`.github/workflows/ci.yml`、`.claude/rules/git.
 
 - `bin/rubocop -f github`（rubocop-rails-omakase）
 - `bin/brakeman --no-pager`
-- `bin/bundler-audit`
+
+`bin/bundler-audit`（gemの既知脆弱性チェック）は`ci.yml`から外し、`.github/workflows/bundler-audit.yml`で
+週1回と`Gemfile`/`Gemfile.lock`を変更したPRでだけ実行する。脆弱性DBの更新でPRと無関係に落ちるため。
+普段の検知と修正PRの作成はDependabot（`.github/dependabot.yml`・security updates）に任せる。
+gemを追加・更新するときは手元でも実行する。
 
 ## つまずきやすい点
 
@@ -110,4 +114,5 @@ CI（リポジトリルートの`.github/workflows/ci.yml`、`.claude/rules/git.
 - CIの`scan_ruby`が`Brakeman X is not the latest version Y`（exit code 5）で落ちる場合、コードの問題ではない。
   `bin/brakeman`が`--ensure-latest`付きのため、Brakemanの新バージョンがリリースされた時点で落ちる。
   `docker compose exec api bundle update brakeman`で`Gemfile.lock`を更新し、`chore:`のPRにする（例：PR #69）。
-  `--ensure-latest`は外さない（スキャナが古いまま動き続けるため）。恒久対応はDependabot（#70）
+  `--ensure-latest`は外さない（スキャナが古いまま動き続けるため）。Dependabot（`.github/dependabot.yml`）が
+  週1回で更新PRを作るので、通常はそれをマージすれば落ちる前に上がる
