@@ -27,7 +27,7 @@ jobs:
         run: bin/brakeman --no-pager
 
       # gemの既知脆弱性チェック（bundler-audit）は、PRと無関係に外部DBの更新で落ちるため
-      # .github/workflows/bundler-audit.yml（週1・Gemfile.lock変更時）に分離している
+      # .github/workflows/bundler-audit.yml（週1・Gemfile・Gemfile.lock変更時）に分離している
 
   lint:
     runs-on: ubuntu-latest
