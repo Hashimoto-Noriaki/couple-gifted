@@ -26,8 +26,8 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
-      - name: Scan for known security vulnerabilities in gems used
-        run: bin/bundler-audit
+      # gemの既知脆弱性チェック（bundler-audit）は、PRと無関係に外部DBの更新で落ちるため
+      # .github/workflows/bundler-audit.yml（週1・Gemfile.lock変更時）に分離している
 
   lint:
     runs-on: ubuntu-latest
