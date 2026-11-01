@@ -12,6 +12,10 @@ on:
       - "backend/Gemfile.lock"
   workflow_dispatch:
 
+# リポジトリ設定（Settings → Actions の初期権限）に依存せず、読み取りのみに絞る
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: backend
