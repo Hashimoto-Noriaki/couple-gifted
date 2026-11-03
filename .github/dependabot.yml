@@ -2,7 +2,10 @@
 # ドキュメント: https://docs.github.com/ja/code-security/dependabot/working-with-dependabot/dependabot-options-reference
 #
 # - 脆弱性の修正PR（security updates）はリポジトリ設定で有効化しており、脆弱性が出た時点で随時作られる
-# - ここで設定しているのは通常のバージョン更新PR。PRが来すぎないよう、週1回・ecosystemごとに1つのPRにまとめる
+# - PRが来すぎないよう、週1回・ecosystemごとに次の最大3PRにまとめる
+#   - <ecosystem>          : minor/patch の通常更新
+#   - <ecosystem>-major    : major の通常更新（破壊的変更を含むので minor/patch とは分ける）
+#   - <ecosystem>-security : 脆弱性の修正PR（applies-to: security-updates。指定しないと1パッケージ1PRで作られる）
 # - コミット・PRタイトルは .claude/rules/git.md の規則に揃えて `chore:` にする
 version: 2
 updates:
@@ -19,6 +22,12 @@ updates:
       bundler:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+      bundler-major:
+        patterns: ["*"]
+        update-types: ["major"]
+      bundler-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # frontend のパッケージ（pnpm-lock.yaml も npm ecosystem で扱われる）
   - package-ecosystem: "npm"
@@ -33,6 +42,12 @@ updates:
       npm:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+      npm-major:
+        patterns: ["*"]
+        update-types: ["major"]
+      npm-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # .github/workflows/ の actions
   - package-ecosystem: "github-actions"
@@ -47,3 +62,9 @@ updates:
       github-actions:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+      github-actions-major:
+        patterns: ["*"]
+        update-types: ["major"]
+      github-actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
