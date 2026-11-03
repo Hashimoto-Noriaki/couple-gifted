@@ -113,7 +113,8 @@ Claude Codeに自動で読み込まれる仕組みになっている（`backend.
 
 ### `testing.md`（テスト方針）
 
-- TDD：Specを先に書いてから実装する（backendのみ。frontendはUIの変更が激しいため対象外）
+- TDD：Specを先に書いてから実装する（backendのみ。frontendはUIの変更が激しいため対象外）。
+  基本サイクルの詳細は`.claude/rules/testing.md`の「基本サイクル」を参照
 - カバレッジ目標は**C1（分岐カバレッジ）**。「if分岐そのものが仕様」というこのプロジェクトの
   特性上、C0（行カバレッジ）より相性が良いという理由も書かれている
 - backend/frontendそれぞれの「何を優先してテストするか」の考え方
@@ -230,7 +231,7 @@ Next.jsはバージョンごとの変化が大きいフレームワークなの�
 1. `CLAUDE.md`を見て「スキーマファースト」を思い出す → 先に`doc/api-design.md`を更新
 2. `backend`を編集するので`.claude/rules/backend.md`が自動で目に入る
    → RFC 9457のエラー形式、`/api/v1/`始まり、ドメインルール（サプライズは隠す等）を踏まえて実装
-3. `.claude/rules/testing.md`を踏まえ、RSpecのSpecを先に書く（TDD）
+3. `.claude/rules/testing.md`を踏まえ、RSpecのSpecを先に書き、実行して失敗を確認してから実装する（TDD）
 4. ファイルを保存するたびに`post-edit-rubocop.sh`が自動でRuboCopを走らせる
 5. コミット前に`/smart-commit`でメッセージを生成、PR作成時に`/pr-description`で本文を生成
 6. `.claude/rules/git.md`に従いブランチ名・コミットプレフィックスを揃える
