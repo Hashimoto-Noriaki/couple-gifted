@@ -48,10 +48,10 @@ couple-gifted/
     │   ├── post-edit-rubocop.sh       # Rubyファイル編集後にRuboCopを自動実行
     │   └── post-edit-biome.sh         # TS/JSファイル編集後にBiomeを自動実行
     └── skills/
-        ├── check-n1/Skill.md          # N+1クエリ検出（/check-n1）
-        ├── create-issue/Skill.md      # GitHub issue作成（/create-issue）
-        ├── pr-description/Skill.md    # PR説明文生成（/pr-description）
-        └── smart-commit/Skill.md      # コミットメッセージ生成（/smart-commit）
+        ├── check-n1/SKILL.md          # N+1クエリ検出（/check-n1）
+        ├── create-issue/SKILL.md      # GitHub issue作成（/create-issue）
+        ├── pr-description/SKILL.md    # PR説明文生成（/pr-description）
+        └── smart-commit/SKILL.md      # コミットメッセージ生成（/smart-commit）
 ```
 
 読む順番のおすすめ：`CLAUDE.md` → 自分の担当（`.claude/rules/backend.md`または`frontend.md`）→
