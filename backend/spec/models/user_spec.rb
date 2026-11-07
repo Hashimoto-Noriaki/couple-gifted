@@ -83,6 +83,13 @@ RSpec.describe User, type: :model do
       expect(user.errors.details[:password]).to eq([ { error: :blank } ])
     end
 
+    it "空白だけの短いパスワードはtoo_shortで弾く（blank扱いで長さの検証を飛ばさない）" do
+      user = build(:user, password: "  ")
+
+      expect(user).not_to be_valid
+      expect(user.errors.details[:password]).to contain_exactly(a_hash_including(error: :too_short))
+    end
+
     it "#{User::PASSWORD_MAX_BYTES}バイトを超えるとtoo_longで弾く（bcryptの上限。文字数ではなくバイト数で数える）" do
       # 「あ」はUTF-8で3バイト。25文字 = 75バイト
       user = build(:user, password: "あ" * 25)
