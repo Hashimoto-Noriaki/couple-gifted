@@ -29,7 +29,9 @@ class User < ApplicationRecord
     format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
   validates :nickname, presence: true, length: { maximum: NICKNAME_MAX_LENGTH }
   validates :password, presence: true, if: -> { password_digest.blank? }
-  validates :password, length: { minimum: PASSWORD_MIN_LENGTH }, allow_blank: true
+  # allow_blankにすると空白だけの短いパスワード（"  "）が長さの検証を素通りする。
+  # 空文字はhas_secure_passwordが未設定（nil）として扱うため、nilだけを除外すればblankと重ならない
+  validates :password, length: { minimum: PASSWORD_MIN_LENGTH }, allow_nil: true
   validate :password_within_bcrypt_limit
 
   private
