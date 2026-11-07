@@ -194,7 +194,9 @@ export interface components {
             email: string;
             /**
              * Format: password
-             * @description 8文字以上72バイト以下（72バイトはbcryptの上限）
+             * @description 8文字以上、UTF-8で72バイト以下（72バイトはbcryptの上限）。
+             *     OpenAPIのmaxLengthは文字数で数えるためバイト数の上限を表せず、ここでは指定しない
+             *     （超えた場合は errors[].code=too_long を返す）
              */
             password: string;
             nickname: string;
