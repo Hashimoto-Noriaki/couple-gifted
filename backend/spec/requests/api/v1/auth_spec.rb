@@ -42,6 +42,9 @@ RSpec.describe "POST /api/v1/auth/sign_up", type: :request do
   end
 
   describe "入力内容に誤りがある場合" do
+    # 以下の多くはスキーマに反するリクエスト（必須項目の欠落・形式違反）をわざと送るため、
+    # リクエスト側の検証はせず、レスポンスがValidationProblemに沿うかだけを確かめる
+    # （assert_response_schema_confirm）
     it "メールアドレスが登録済みなら422（taken）を返し、会員を作らない" do
       create(:user, email: "hanako@example.com")
 
@@ -76,6 +79,37 @@ RSpec.describe "POST /api/v1/auth/sign_up", type: :request do
 
       assert_response_schema_confirm(422)
       expect(error_pairs).to contain_exactly([ "password", "too_short" ])
+    end
+
+    it "同時に同じメールアドレスで登録され、DBの一意制約で弾かれても422（taken）を返す" do
+      # 一意性のバリデーションを通過した後、INSERTの時点で別のリクエストに先を越された状況
+      allow_any_instance_of(User).to receive(:save).and_raise(ActiveRecord::RecordNotUnique)
+
+      sign_up(valid_params)
+
+      assert_schema_conform(422)
+      expect(error_pairs).to contain_exactly([ "email", "taken" ])
+    end
+
+    it "パスワードが#{User::PASSWORD_MAX_BYTES}バイトを超えれば422（too_long）を返す" do
+      sign_up(valid_params.merge(password: "あ" * 25))
+
+      assert_schema_conform(422)
+      expect(error_pairs).to contain_exactly([ "password", "too_long" ])
+    end
+
+    it "パスワードが無ければ422（blank）だけを返す" do
+      sign_up(valid_params.except(:password))
+
+      assert_response_schema_confirm(422)
+      expect(error_pairs).to contain_exactly([ "password", "blank" ])
+    end
+
+    it "メールアドレスが無ければ422（blank）を返す" do
+      sign_up(valid_params.except(:email))
+
+      assert_response_schema_confirm(422)
+      expect(error_pairs).to contain_exactly([ "email", "blank" ])
     end
 
     it "ニックネームが無ければ422（blank）を返す" do
