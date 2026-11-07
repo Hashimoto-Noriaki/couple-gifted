@@ -11,7 +11,7 @@ paths:
 
 - バージョンは`Gemfile`・`.ruby-version`を正とする（ここには書かない。ドリフト防止）
 - DBはSQLite3（DBコンテナ無し）。PostgreSQLは本番候補として検討中だが未確定。「PostgreSQL前提」のコードを書かない
-- 認証方式・レスポンスのシリアライズ方式は未決定（Gemfileに該当gemなし）。devise_token_auth・jsonapi-serializer等を導入すると、この場で断定しない。導入する際は`doc/api-design.md`・`doc/api/openapi.yaml`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
+- 会員のパスワードは`has_secure_password`（bcrypt）で保持する（`doc/requirements.md`決定事項ログ #30）。トークンの発行方式（JWT等）・レスポンスのシリアライズ方式は未決定。devise・devise-jwt・jsonapi-serializer等を導入すると、この場で断定しない。導入する際は`doc/api-design.md`・`doc/api/openapi.yaml`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
 - 外部API連携（Google Places API等）は`doc/`に記載がない限り前提にしない。使う場合はまず`doc/`に根拠を残す
 
 ## 開発の進め方（Railsに固有の部分）

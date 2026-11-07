@@ -233,11 +233,11 @@ erDiagram
 | email | string | ユニーク |
 | password_digest | string | |
 | nickname | string | 必須 |
-| age_band | enum | 20代前半／20代後半／30代前半… |
+| age_band | enum | 10代後半／20代前半／20代後半／30代前半／30代後半／40代以上。null許容（未設定） |
 | area_id | uuid | FK。居住エリア。null許容 |
-| has_children | boolean | 子どもの有無。**検索の初期値補完に使う** |
-| relationship_stage | enum | null許容（未設定） |
-| status | enum | active / suspended / withdrawn |
+| has_children | boolean | 子どもの有無。**検索の初期値補完に使う**。初期値false |
+| relationship_stage | enum | 交際初期／交際中期／婚約中／新婚／夫婦。null許容（未設定） |
+| status | enum | active / suspended / withdrawn。初期値active |
 | withdrawn_at | datetime | null許容 |
 
 **交際開始日・婚約日・結婚日は持たない**（決定事項ログ #24）。
