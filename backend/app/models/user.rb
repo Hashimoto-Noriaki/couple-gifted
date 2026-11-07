@@ -1,10 +1,12 @@
 class User < ApplicationRecord
   PASSWORD_MIN_LENGTH = 8
+  PASSWORD_MAX_BYTES = 72
   NICKNAME_MAX_LENGTH = 50
 
   # 認証情報を平文で保持しない（doc/requirements.md 非機能要件、決定事項ログ #30）。
-  # 72バイト上限・作成時の必須チェックはhas_secure_passwordが行う
-  has_secure_password
+  # 組み込みのバリデーションは上限超過を独自のコード（password_too_long）で返し、
+  # doc/api/openapi.yaml「ValidationProblem」のcode一覧と食い違うため使わず、下で自前で検証する
+  has_secure_password validations: false
 
   # 居住エリア。未設定（null）を許す（doc/er-and-db-design.md）
   belongs_to :area, optional: true
@@ -26,5 +28,16 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true,
     format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
   validates :nickname, presence: true, length: { maximum: NICKNAME_MAX_LENGTH }
-  validates :password, length: { minimum: PASSWORD_MIN_LENGTH }, allow_nil: true
+  validates :password, presence: true, if: -> { password_digest.blank? }
+  validates :password, length: { minimum: PASSWORD_MIN_LENGTH }, allow_blank: true
+  validate :password_within_bcrypt_limit
+
+  private
+
+  # bcryptは72バイトを超えた分を黙って無視する。文字数ではなくバイト数で数える
+  def password_within_bcrypt_limit
+    return if password.nil? || password.bytesize <= PASSWORD_MAX_BYTES
+
+    errors.add(:password, :too_long, count: PASSWORD_MAX_BYTES)
+  end
 end
