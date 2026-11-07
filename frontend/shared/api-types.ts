@@ -94,6 +94,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/sign_up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 新規登録する
+         * @description 会員を新しく作る（doc/use-cases.md「新規登録する」）。
+         *     ⚠️未実装：ログイン状態にするためのトークン発行は、ログイン（/auth/sign_in）・
+         *     トークン更新（/auth/refresh）の実装時に方式を決めて追加する（doc/requirements.md 決定事項ログ #30）。
+         *     現時点では作成した会員の情報だけを返す。
+         *
+         *     利用規約への同意はクライアント側で必須にする（同意がないと登録ボタンを押せない）。
+         *
+         *     メールアドレスが登録済みの場合は errors[].code=taken を返す。停止済み・退会済みの
+         *     会員と同じメールアドレスでも同じ扱いにする（停止の事実を伝えない）。
+         */
+        post: operations["signUp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -158,6 +186,45 @@ export interface components {
             /** @description 次ページが無ければ null */
             next_cursor: string | null;
         };
+        SignUpRequest: {
+            /**
+             * Format: email
+             * @description 前後の空白を除き、小文字にそろえて保存する（大文字小文字違いの重複登録を防ぐ）
+             */
+            email: string;
+            /**
+             * Format: password
+             * @description 8文字以上72バイト以下（72バイトはbcryptの上限）
+             */
+            password: string;
+            nickname: string;
+        };
+        /** @description 会員の情報。パスワード（password_digest）・状態（status）は返さない。 */
+        User: {
+            /** Format: uuid */
+            id: string;
+            /** Format: email */
+            email: string;
+            nickname: string;
+            /**
+             * @description 年代。10代後半／20代前半／20代後半／30代前半／30代後半／40代以上。未設定は null
+             * @enum {string|null}
+             */
+            age_band: "late_teens" | "early_20s" | "late_20s" | "early_30s" | "late_30s" | "forties_and_over" | null;
+            /**
+             * Format: uuid
+             * @description 居住エリア。未設定は null
+             */
+            area_id: string | null;
+            /** @description 子どもの有無（検索の初期値補完に使う） */
+            has_children: boolean;
+            /**
+             * @description 関係ステージ。交際初期／交際中期／婚約中／新婚／夫婦（doc/ubiquitous-language.md）。
+             *     未設定は null
+             * @enum {string|null}
+             */
+            relationship_stage: "early_dating" | "mid_dating" | "engaged" | "newlywed" | "married" | null;
+        };
         /** @description RFC 9457 (Problem Details) 形式。doc/api-design.md「設計上の判断 4」参照 */
         Problem: {
             /** Format: uri */
@@ -165,6 +232,18 @@ export interface components {
             title: string;
             status: number;
             request_id?: string;
+        };
+        /**
+         * @description 入力内容の誤り。RFC 9457 の拡張メンバーとして、項目ごとの誤りを errors に入れる。
+         *     表示する文言はクライアントが field・code から組み立てる（APIは文言を返さない）。
+         */
+        ValidationProblem: components["schemas"]["Problem"] & {
+            errors: {
+                /** @description 誤りのある項目名（例：email） */
+                field: string;
+                /** @description 誤りの種類（blank / taken / invalid / too_short / too_long） */
+                code: string;
+            }[];
         };
     };
     responses: {
@@ -175,6 +254,15 @@ export interface components {
             };
             content: {
                 "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description 入力内容に誤りがある */
+        UnprocessableEntity: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["ValidationProblem"];
             };
         };
         /** @description 対象が存在しない */
@@ -298,6 +386,31 @@ export interface operations {
                     "application/json": components["schemas"]["CategoryList"];
                 };
             };
+        };
+    };
+    signUp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignUpRequest"];
+            };
+        };
+        responses: {
+            /** @description 登録できた */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            422: components["responses"]["UnprocessableEntity"];
         };
     };
 }
