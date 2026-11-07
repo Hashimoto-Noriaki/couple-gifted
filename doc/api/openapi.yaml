@@ -14,7 +14,8 @@ info:
 
     ## 未整備（実装が進むにつれて拡充する）
     現時点では doc/requirements.md のスケジュール（Week 3-4 縦串貫通、issue #49）に沿って、
-    スポット検索・詳細と、その絞り込みに使うマスタ（エリア・カテゴリ一覧）のみを定義している。
+    スポット検索・詳細と、その絞り込みに使うマスタ（エリア・カテゴリ一覧）、
+    新規登録（issue #46）のみを定義している。
     他の窓口は doc/api-design.md の「エンドポイント一覧」を見ながら機能ごとに追記する。
 
     ## idの型について
@@ -143,6 +144,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/CategoryList"
 
+  /auth/sign_up:
+    post:
+      operationId: signUp
+      summary: 新規登録する
+      description: |
+        会員を新しく作る（doc/use-cases.md「新規登録する」）。
+        ⚠️未実装：ログイン状態にするためのトークン発行は、ログイン（/auth/sign_in）・
+        トークン更新（/auth/refresh）の実装時に方式を決めて追加する（doc/requirements.md 決定事項ログ #30）。
+        現時点では作成した会員の情報だけを返す。
+
+        利用規約への同意はクライアント側で必須にする（同意がないと登録ボタンを押せない）。
+
+        メールアドレスが登録済みの場合は errors[].code=taken を返す。停止済み・退会済みの
+        会員と同じメールアドレスでも同じ扱いにする（停止の事実を伝えない）。
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "201":
+          description: 登録できた
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
 components:
   parameters:
     SpotId:
@@ -260,6 +292,63 @@ components:
           nullable: true
           description: 次ページが無ければ null
 
+    SignUpRequest:
+      type: object
+      required: [email, password, nickname]
+      properties:
+        email:
+          type: string
+          format: email
+          description: 前後の空白を除き、小文字にそろえて保存する（大文字小文字違いの重複登録を防ぐ）
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: |
+            8文字以上、UTF-8で72バイト以下（72バイトはbcryptの上限）。
+            OpenAPIのmaxLengthは文字数で数えるためバイト数の上限を表せず、ここでは指定しない
+            （超えた場合は errors[].code=too_long を返す）
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    User:
+      type: object
+      description: |
+        会員の情報。パスワード（password_digest）・状態（status）は返さない。
+      required: [id, email, nickname, age_band, area_id, has_children, relationship_stage]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        age_band:
+          type: string
+          nullable: true
+          enum: [late_teens, early_20s, late_20s, early_30s, late_30s, forties_and_over, null]
+          description: |
+            年代。10代後半／20代前半／20代後半／30代前半／30代後半／40代以上。未設定は null
+        area_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 居住エリア。未設定は null
+        has_children:
+          type: boolean
+          description: 子どもの有無（検索の初期値補完に使う）
+        relationship_stage:
+          type: string
+          nullable: true
+          enum: [early_dating, mid_dating, engaged, newlywed, married, null]
+          description: |
+            関係ステージ。交際初期／交際中期／婚約中／新婚／夫婦（doc/ubiquitous-language.md）。
+            未設定は null
+
     Problem:
       type: object
       description: RFC 9457 (Problem Details) 形式。doc/api-design.md「設計上の判断 4」参照
@@ -275,6 +364,28 @@ components:
         request_id:
           type: string
 
+    ValidationProblem:
+      description: |
+        入力内容の誤り。RFC 9457 の拡張メンバーとして、項目ごとの誤りを errors に入れる。
+        表示する文言はクライアントが field・code から組み立てる（APIは文言を返さない）。
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+        - type: object
+          required: [errors]
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                required: [field, code]
+                properties:
+                  field:
+                    type: string
+                    description: 誤りのある項目名（例：email）
+                  code:
+                    type: string
+                    description: 誤りの種類（blank / taken / invalid / too_short / too_long）
+
   responses:
     BadRequest:
       description: リクエストが不正
@@ -282,6 +393,12 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
+    UnprocessableEntity:
+      description: 入力内容に誤りがある
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ValidationProblem"
     NotFound:
       description: 対象が存在しない
       content:

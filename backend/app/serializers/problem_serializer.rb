@@ -4,11 +4,13 @@
 class ProblemSerializer
   BASE_URI = "https://couplegifted.example/errors".freeze
 
-  def initialize(type:, title:, status:, request_id: nil)
+  # errors：入力内容の誤り（doc/api/openapi.yaml「ValidationProblem」）。RFC 9457の拡張メンバー
+  def initialize(type:, title:, status:, request_id: nil, errors: nil)
     @type = type
     @title = title
     @status = status
     @request_id = request_id
+    @errors = errors
   end
 
   def as_json(*)
@@ -16,11 +18,12 @@ class ProblemSerializer
       type: type,
       title: title,
       status: status,
-      request_id: request_id
+      request_id: request_id,
+      errors: errors
     }.compact
   end
 
   private
 
-  attr_reader :type, :title, :status, :request_id
+  attr_reader :type, :title, :status, :request_id, :errors
 end

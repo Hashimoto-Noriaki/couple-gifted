@@ -10,39 +10,56 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_062916) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_061009) do
   create_table "areas", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "parent_id"
     t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["parent_id"], name: "index_areas_on_parent_id"
   end
 
   create_table "categories", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "name", null: false
     t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "spots", id: :string, force: :cascade do |t|
-    t.string "address", null: false
+    t.string "name", null: false
     t.string "area_id", null: false
     t.string "category_id", null: false
-    t.datetime "created_at", null: false
     t.decimal "lat", precision: 9, scale: 6
     t.decimal "lng", precision: 9, scale: 6
-    t.string "name", null: false
-    t.decimal "rating_average", precision: 3, scale: 2
-    t.integer "reviews_count", default: 0, null: false
+    t.string "address", null: false
     t.integer "status", default: 0, null: false
+    t.integer "reviews_count", default: 0, null: false
+    t.decimal "rating_average", precision: 3, scale: 2
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["area_id", "category_id", "status"], name: "index_spots_on_area_id_and_category_id_and_status"
+  end
+
+  create_table "users", id: :string, force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.string "nickname", null: false
+    t.integer "age_band"
+    t.string "area_id"
+    t.boolean "has_children", default: false, null: false
+    t.integer "relationship_stage"
+    t.integer "status", default: 0, null: false
+    t.datetime "withdrawn_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id"], name: "index_users_on_area_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "areas", "areas", column: "parent_id"
   add_foreign_key "spots", "areas"
   add_foreign_key "spots", "categories"
+  add_foreign_key "users", "areas"
 end

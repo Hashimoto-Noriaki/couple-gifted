@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       resources :spots, only: %i[index show]
       resources :areas, only: %i[index]
       resources :categories, only: %i[index]
+
+      post "auth/sign_up", to: "auth#sign_up"
     end
   end
 
