@@ -1,6 +1,6 @@
 # Claude Codeの設定ガイド（CLAUDE.md・.claude/）
 
-- **最終更新**：2026-08-19
+- **最終更新**：2026-11-08
 - **対象読者**：Claude Code（AIコーディングツール）を初めて触る人・駆け出しエンジニア
 - **本書の範囲**：`CLAUDE.md`・`.claude/`配下・`frontend/AGENTS.md`が「何のためにあり、何を書いてあるか」を説明する。中身のルールそのもの（TDDの詳細、ドメインルールの中身など）は各ファイルと`doc/`の他ドキュメントが正本。ここはあくまで「地図」
 
@@ -49,6 +49,7 @@ couple-gifted/
     │   └── post-edit-biome.sh         # TS/JSファイル編集後にBiomeを自動実行
     └── skills/
         ├── check-n1/SKILL.md          # N+1クエリ検出（/check-n1）
+        ├── ci-check/SKILL.md          # CI相当のLint・テスト実行（/ci-check）
         ├── create-issue/SKILL.md      # GitHub issue作成（/create-issue）
         ├── pr-description/SKILL.md    # PR説明文生成（/pr-description）
         └── smart-commit/SKILL.md      # コミットメッセージ生成（/smart-commit）
@@ -203,6 +204,7 @@ Claude Codeが「確認なしで実行してよいコマンド（allow）」と�
 | コマンド | 何をするか |
 | --- | --- |
 | `/check-n1` | Controller・Service・Modelを読んでN+1クエリの疑いがある箇所を検出し、`includes`等の修正案を提示する |
+| `/ci-check` | CIと同じLint・セキュリティチェック・テストを手元で実行して報告する（`/ci-check backend`・`/ci-check frontend`で範囲を絞れる）。失敗しても自動修正はしない |
 | `/create-issue` | ユーザーとの会話をもとに、テンプレートに沿ったGitHub issueを作成する（バグ報告／機能要望・タスク） |
 | `/pr-description` | 差分を見て、PRのタイトル・本文（概要・変更内容・テスト計画・チェックリスト）を生成する |
 | `/smart-commit` | ステージ済みの差分を見て、プレフィックス規則（`feat`/`fix`/`test`/`refactor`/`docs`/`chore`）に沿ったコミットメッセージを生成する |
@@ -250,4 +252,4 @@ Next.jsはバージョンごとの変化が大きいフレームワークなの�
 - `.claude/settings.json`のallow/denyは「Claude Codeに対する制限」であって、CIのチェックではない。
   人間が手元でdenyに該当するコマンドを打つこと自体は止まらない（打たない方がよいのは変わらない）
 - hooksが自動でLintを走らせてくれるとはいえ、`bundle exec brakeman`・`bundle exec bundler-audit`
-  （`.claude/rules/backend.md`参照）は自動化されていないため、コミット前に手動実行が必要
+  （`.claude/rules/backend.md`参照）は保存時には走らないため、コミット前に`/ci-check`で実行する
