@@ -4,6 +4,7 @@ RSpec.describe User, type: :model do
   subject { build(:user) }
 
   it { is_expected.to belong_to(:area).optional }
+  it { is_expected.to have_many(:auth_sessions).dependent(:delete_all) }
   it { is_expected.to have_secure_password }
   it { is_expected.to validate_presence_of(:email) }
   it { is_expected.to validate_presence_of(:nickname) }
