@@ -15,13 +15,18 @@ info:
     ## 未整備（実装が進むにつれて拡充する）
     現時点では doc/requirements.md のスケジュール（Week 3-4 縦串貫通、issue #49）に沿って、
     スポット検索・詳細と、その絞り込みに使うマスタ（エリア・カテゴリ一覧）、
-    新規登録（issue #46）のみを定義している。
+    新規登録（issue #46）、ログイン・トークン更新・ログアウト（issue #107）のみを定義している。
     他の窓口は doc/api-design.md の「エンドポイント一覧」を見ながら機能ごとに追記する。
 
     ## idの型について
     doc/er-and-db-design.md の通り主キーはuuidのため、id・area_id・category_id は
     string（format: uuid）。SQLiteにネイティブなuuid型は無く、アプリ側（ApplicationRecord）
     で生成する。
+
+    ## 認証
+    会員限定の窓口は `Authorization: Bearer <access_token>` で呼ぶ（securitySchemes「bearerAuth」）。
+    アクセストークン（15分）が切れたら /auth/refresh にリフレッシュトークン（30日）を渡し、2本とも
+    新しくもらう。方式は doc/requirements.md 決定事項ログ #30、doc/api-design.md「設計上の判断 7」。
 
 servers:
   - url: /api/v1
@@ -150,9 +155,9 @@ paths:
       summary: 新規登録する
       description: |
         会員を新しく作る（doc/use-cases.md「新規登録する」）。
-        ⚠️未実装：ログイン状態にするためのトークン発行は、ログイン（/auth/sign_in）・
-        トークン更新（/auth/refresh）の実装時に方式を決めて追加する（doc/requirements.md 決定事項ログ #30）。
-        現時点では作成した会員の情報だけを返す。
+        ⚠️未実装：登録と同時にログイン状態にする（トークンを返す）ことは未対応。
+        トークン方式は決定済み（doc/requirements.md 決定事項ログ #30、/auth/sign_in と同じ AuthTokens）だが、
+        このエンドポイントは現時点では作成した会員の情報だけを返す。
 
         利用規約への同意はクライアント側で必須にする（同意がないと登録ボタンを押せない）。
 
@@ -175,7 +180,99 @@ paths:
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
 
+  /auth/sign_in:
+    post:
+      operationId: signIn
+      summary: ログインする
+      description: |
+        メールアドレスとパスワードを確かめ、アクセストークンとリフレッシュトークンを返す
+        （doc/use-cases.md「ログインする」）。ログインのたびに新しい認証セッションを作る
+        （端末ごとに別のトークンになる）。
+
+        失敗の理由は区別しない。メールアドレスが無い・パスワードが違う・退会済み・項目の欠けの
+        どれでも、同じ 401（type=.../errors/invalid-credentials）を返す。メールアドレスが
+        登録済みかどうかを外部から判定させないため（doc/api-design.md「設計上の判断 7」）。
+
+        停止中の会員だけは、パスワードまで正しい場合に限り 403（type=.../errors/account-suspended）を返す
+        （停止されていることを本人に伝える。本人以外には伝わらない）。
+
+        ⚠️未実装：連続して失敗した場合の試行制限（doc/use-cases.md「ログインする」例外フロー、issue #111）。
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "200":
+          description: ログインできた
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokens"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      summary: トークンを更新する
+      description: |
+        リフレッシュトークンを渡し、新しいアクセストークンとリフレッシュトークンをもらう。
+        渡したリフレッシュトークンはこの時点で使えなくなる（使うたびに入れ替わる）。
+
+        リフレッシュトークンが無い・誤り・期限切れ・使用済み、または会員が停止・退会済みの場合は
+        401（type=.../errors/unauthenticated）を返す。この場合はログインし直す。
+
+        使用済み（入れ替え済み）のリフレッシュトークンが再び使われた場合は、盗まれたとみなして
+        そのログイン（認証セッション）ごと失効させる。入れ替え後のトークンも使えなくなる。
+        クライアントは同じリフレッシュトークンで更新を並行して送らないこと。
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: 更新できた
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokens"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/sign_out:
+    delete:
+      operationId: signOut
+      summary: ログアウトする
+      description: |
+        いまのアクセストークンが属する認証セッションを消す（doc/use-cases.md「ログアウトする」）。
+        そのセッションのアクセストークン・リフレッシュトークンは2本とも使えなくなる。
+        他の端末のログインには影響しない。
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: ログアウトできた
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        /auth/sign_in・/auth/refresh で受け取った access_token（有効期限15分）。
+        中身は不透明な文字列として扱う（クライアントで解釈しない）。
+
   parameters:
     SpotId:
       name: id
@@ -313,6 +410,46 @@ components:
           minLength: 1
           maxLength: 50
 
+    SignInRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          description: 大文字小文字・前後の空白の違いは無視して照合する
+        password:
+          type: string
+          format: password
+
+    RefreshTokenRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+
+    AuthTokens:
+      type: object
+      description: |
+        ログイン・トークン更新の結果。refresh_token はこのレスポンスでしか受け取れない
+        （サーバはダイジェストしか保持しない）。
+      required: [access_token, refresh_token, token_type, expires_in, user]
+      properties:
+        access_token:
+          type: string
+          description: 会員限定の窓口に Authorization ヘッダで付ける
+        refresh_token:
+          type: string
+          description: /auth/refresh に渡す。有効期限30日。使うたびに入れ替わる
+        token_type:
+          type: string
+          enum: [Bearer]
+        expires_in:
+          type: integer
+          description: access_token の有効期間（秒）
+        user:
+          $ref: "#/components/schemas/User"
+
     User:
       type: object
       description: |
@@ -399,6 +536,24 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ValidationProblem"
+    Unauthorized:
+      description: |
+        認証できない。ログイン失敗（invalid-credentials）、またはトークンが無い・誤り・期限切れ・
+        失効済み（unauthenticated）。WWW-Authenticate: Bearer を付ける
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    Forbidden:
+      description: 認証はできたが、許可されていない（停止中の会員のログイン：account-suspended）
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     NotFound:
       description: 対象が存在しない
       content:
