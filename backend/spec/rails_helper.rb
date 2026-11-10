@@ -78,6 +78,9 @@ RSpec.configure do |config|
   # Allow calling FactoryBot methods (create, build, ...) without the `FactoryBot.` prefix.
   config.include FactoryBot::Syntax::Methods
 
+  # travel / freeze_time で時刻を進める（トークンの有効期限の検証など）
+  config.include ActiveSupport::Testing::TimeHelpers
+
   # doc/api/openapi.yaml をSSoTとしてリクエスト/レスポンスを検証する（doc/api-design.md「6. 契約の維持」）。
   # doc/ はコンテナに /doc としてマウントされている（docker-compose.yml参照。/rails からは見えない）。
   # Request Spec内で assert_schema_conform(status) / assert_request_schema_confirm / assert_response_schema_confirm を使う。
