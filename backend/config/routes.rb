@@ -12,6 +12,9 @@ Rails.application.routes.draw do
       resources :categories, only: %i[index]
 
       post "auth/sign_up", to: "auth#sign_up"
+      post "auth/sign_in", to: "auth#sign_in"
+      post "auth/refresh", to: "auth#refresh"
+      delete "auth/sign_out", to: "auth#sign_out"
     end
   end
 
