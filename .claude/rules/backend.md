@@ -11,7 +11,13 @@ paths:
 
 - バージョンは`Gemfile`・`.ruby-version`を正とする（ここには書かない。ドリフト防止）
 - DBはSQLite3（DBコンテナ無し）。PostgreSQLは本番候補として検討中だが未確定。「PostgreSQL前提」のコードを書かない
-- 会員のパスワードは`has_secure_password`（bcrypt）で保持する（`doc/requirements.md`決定事項ログ #30）。トークンの発行方式（JWT等）・レスポンスのシリアライズ方式は未決定。devise・devise-jwt・jsonapi-serializer等を導入すると、この場で断定しない。導入する際は`doc/api-design.md`・`doc/api/openapi.yaml`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
+- 会員のパスワードは`has_secure_password`（bcrypt）で保持する（`doc/requirements.md`決定事項ログ #30）
+- 認証トークンは決定事項ログ #30の方式（issue #107）。devise・devise-jwt・jwt等のgemは使わない
+  - ログインのたびに`AuthSession`（`auth_sessions`）を1行作る。アクセストークンはその`signed_id`（`purpose: :access`、15分）、リフレッシュトークンはランダム値でDBには`refresh_token_digest`（SHA-256）だけを保存する。平文のリフレッシュトークンをDB・ログに残さない
+  - トークン更新（refresh）のたびにリフレッシュトークンを入れ替え、1つ前のダイジェストを`previous_refresh_token_digest`に残す。それが再び使われたら盗用とみなしてセッションごと消す。ログアウトもセッションの行を消す（アクセストークンも即座に無効になる）
+  - 認証が必要なアクションは`ApplicationController`の`before_action :authenticate!`を使い、`current_user`で本人を得る。停止・退会済みの会員は認証済みとして扱わない
+  - ログイン失敗は、メールアドレス違い・パスワード違い・退会済みを区別せず同じ401を返す（`doc/use-cases.md`「ログインする」）。停止中だけは正しいパスワードのときに限り403で伝える
+- レスポンスのシリアライズ用gem（jsonapi-serializer等）は未導入。導入すると、この場で断定しない。gemを導入する際は`doc/api-design.md`・`doc/api/openapi.yaml`と`Gemfile`を先に更新してから実装する（スキーマファーストの原則）
 - 外部API連携（Google Places API等）は`doc/`に記載がない限り前提にしない。使う場合はまず`doc/`に根拠を残す
 
 ## 開発の進め方（Railsに固有の部分）
@@ -55,7 +61,7 @@ paths:
   - `committee_options`の`prefix: '/api/v1'`は必須（`openapi.yaml`の`servers.url`はcommitteeが自動参照しないため）。無いと全リクエストが`undefined in schema`で失敗する
   - ⚠️未整備：CIでスキーマと実装のドリフトを検知する仕組みは無い（手元で`bundle exec rspec`を通す運用）
 - `doc/api/openapi.yaml`は`/api-docs`（Swagger UI、`rswag-ui`gem）でも閲覧できる。`/api/v1/`配下ではないため上記のRFC 9457等のドメイン規約対象外（管理画面と同じ扱い）
-  - HTTPエンドポイントとしての公開はdevelopment限定（`config/routes.rb`・`config/initializers/rswag_ui.rb`は`Rails.env.development?`で分岐）。認証機構が未実装のため、本番公開するとAPIスキーマ全体が誰でも閲覧できてしまう
+  - HTTPエンドポイントとしての公開はdevelopment限定（`config/routes.rb`・`config/initializers/rswag_ui.rb`は`Rails.env.development?`で分岐）。会員向けの認証はあるが、Swagger UIを守る仕組み（管理者認証等）は無いため、本番公開するとAPIスキーマ全体が誰でも閲覧できてしまう
   - `doc/api/openapi.yaml`を生ファイルのまま返すだけ（`app/controllers/api_docs_controller.rb`）。パスは`config/initializers/openapi.rb`で一元管理し、`spec/rails_helper.rb`のcommittee_optionsと共有する（SSoTは変わらず`doc/api/openapi.yaml`）
   - gem自体は`group :development, :test`（`Gemfile`）。testグループにも含めるのは、`spec/requests/api_docs_spec.rb`で`Rails.env`をdevelopmentに見せかけてルーティングを検証するため（HTTP公開範囲とは別の話）
 
