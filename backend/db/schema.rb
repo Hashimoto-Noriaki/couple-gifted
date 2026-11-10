@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_07_061009) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_10_115717) do
   create_table "areas", id: :string, force: :cascade do |t|
     t.string "name", null: false
     t.string "parent_id"
@@ -18,6 +18,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_061009) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["parent_id"], name: "index_areas_on_parent_id"
+  end
+
+  create_table "auth_sessions", id: :string, force: :cascade do |t|
+    t.string "user_id", null: false
+    t.string "refresh_token_digest", null: false
+    t.datetime "refresh_token_expires_at", null: false
+    t.string "previous_refresh_token_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["previous_refresh_token_digest"], name: "index_auth_sessions_on_previous_refresh_token_digest"
+    t.index ["refresh_token_digest"], name: "index_auth_sessions_on_refresh_token_digest", unique: true
+    t.index ["user_id"], name: "index_auth_sessions_on_user_id"
   end
 
   create_table "categories", id: :string, force: :cascade do |t|
@@ -59,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_061009) do
   end
 
   add_foreign_key "areas", "areas", column: "parent_id"
+  add_foreign_key "auth_sessions", "users"
   add_foreign_key "spots", "areas"
   add_foreign_key "spots", "categories"
   add_foreign_key "users", "areas"
