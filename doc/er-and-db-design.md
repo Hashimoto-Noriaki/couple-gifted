@@ -1,6 +1,6 @@
 # ER図・DB設計
 
-- **最終更新**：2026-07-31
+- **最終更新**：2026-11-10
 - **前提ドキュメント**：`doc/domain-model.md`、`doc/wireframes.md`、`doc/ubiquitous-language.md`
 - **本書の範囲**：どんなデータを、どうつなげて持つかを決める。エンドポイントは `doc/api-design.md` で決める
 
@@ -26,6 +26,7 @@
 | 箱（テーブル） | 何を入れるか |
 | --- | --- |
 | **会員** | ニックネーム・年代・居住エリア・子どもの有無・関係ステージ |
+| **認証セッション** | 誰が、どのログインで入っているか（トークン更新・ログアウトに使う） |
 | **カップル** | 連携の状態（連携中／解除済み） |
 | **連携メンバー** | 誰がどのカップルに属しているか（間に立つ箱） |
 | **招待コード** | 誰が発行したコードか・有効期限・状態 |
@@ -54,6 +55,11 @@
 - 1つのカップルには、会員が**2人**
 
 → 「連携メンバー」という間に立つ箱が必要（後述）
+
+### 会員 ⇄ 認証セッション
+
+- 1人の会員は、認証セッションを**複数**持てる（スマホとPCなど、ログインした端末ごとに1つ）
+- 1つの認証セッションは、**1人**のもの
 
 ### 会員 ⇄ 招待コード
 
@@ -204,6 +210,7 @@
 
 ```mermaid
 erDiagram
+  users ||--o{ auth_sessions : ""
   users ||--o{ couple_memberships : ""
   couples ||--o{ couple_memberships : ""
   users ||--o{ invitation_codes : ""
@@ -241,6 +248,22 @@ erDiagram
 | withdrawn_at | datetime | null許容 |
 
 **交際開始日・婚約日・結婚日は持たない**（決定事項ログ #24）。
+
+### auth_sessions（認証セッション）
+
+ログインのたびに1行作る。トークン方式は要件定義書 決定事項ログ #30（issue #107）。
+
+| カラム | 型 | 備考 |
+| --- | --- | --- |
+| id | uuid | PK。アクセストークンはこのidの署名付きID（Railsの`signed_id`、有効期限15分）。トークン自体はDBに保存しない |
+| user_id | uuid | FK |
+| refresh_token_digest | string | リフレッシュトークンのSHA-256ダイジェスト。ユニーク。**平文は保存しない** |
+| refresh_token_expires_at | datetime | リフレッシュトークンの有効期限（発行・更新から30日） |
+| previous_refresh_token_digest | string | 1つ前（入れ替え済み）のリフレッシュトークンのダイジェスト。null許容。**再び使われたら盗用とみなしてこの行を消す** |
+
+- トークン更新のたびに `refresh_token_digest` と `refresh_token_expires_at` を入れ替える（古いリフレッシュトークンは使えなくなる）
+- ログアウトは行を消す。行が無くなれば、同じセッションのアクセストークンも即座に使えなくなる
+- 期限切れの行の掃除・1会員あたりのセッション数の上限は未整備（issue #112）
 
 ### couples（カップル）
 
@@ -423,6 +446,8 @@ erDiagram
 
 | テーブル | インデックス | 目的 |
 | --- | --- | --- |
+| auth_sessions | (refresh_token_digest) ユニーク | リフレッシュトークンの照合 |
+| auth_sessions | (previous_refresh_token_digest) | 使用済みトークンの再利用の検知 |
 | spots | (area_id, category_id, status) | 一覧の絞り込み |
 | reviews | (spot_id, status, stage_at_review) | 属性による絞り込み |
 | reviews | (spot_id, scope_id) 部分ユニーク | 平均集計の一意性 |

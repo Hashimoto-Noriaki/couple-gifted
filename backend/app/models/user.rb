@@ -10,6 +10,9 @@ class User < ApplicationRecord
 
   # 居住エリア。未設定（null）を許す（doc/er-and-db-design.md）
   belongs_to :area, optional: true
+  # ログインした端末ごとの認証セッション（doc/er-and-db-design.md「auth_sessions」）
+  # コールバックを持たないため、1件ずつ読み込まず1回のDELETEで消す
+  has_many :auth_sessions, dependent: :delete_all
 
   # 選択肢はdoc/er-and-db-design.md「決めた選択肢」。nilは未設定
   enum :age_band, {

@@ -3,6 +3,35 @@ class ApplicationController < ActionController::API
 
   private
 
+  # 会員限定のアクションに付ける。Authorization: Bearer <アクセストークン> から本人を確かめる
+  # （doc/api/openapi.yaml「bearerAuth」、決定事項ログ #30）。停止・退会済みの会員は認証済みとして扱わない
+  def authenticate!
+    auth_session = AuthSession.find_by_access_token(bearer_token)
+    @current_auth_session = auth_session if auth_session&.user&.active?
+    render_unauthenticated unless current_auth_session
+  end
+
+  attr_reader :current_auth_session
+
+  def current_user
+    current_auth_session&.user
+  end
+
+  def bearer_token
+    # 認証方式名は大文字小文字を区別しない（RFC 7235）
+    request.authorization.to_s[/\ABearer\s+(\S+)\z/i, 1]
+  end
+
+  # トークンが無い・誤り・期限切れ・失効済みのどれでも同じ応答にする
+  def render_unauthenticated
+    response.headers["WWW-Authenticate"] = "Bearer"
+    render_problem(
+      status: :unauthorized,
+      type: "#{ProblemSerializer::BASE_URI}/unauthenticated",
+      title: "ログインが必要です"
+    )
+  end
+
   def render_problem(status:, type:, title:, errors: nil)
     render(
       json: ProblemSerializer.new(
