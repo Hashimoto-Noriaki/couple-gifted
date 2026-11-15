@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
+import { Header } from "@/shared/components/Header";
 import { getSpot, listAreas, listCategories } from "./api";
-import { Header } from "./components/Header";
 import { formatRating } from "./lib/formatRating";
 import {
   parseSpotFilter,
