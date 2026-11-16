@@ -7,13 +7,16 @@ module Api
 
       before_action :authenticate!, only: :sign_out
 
-      # ⚠️未実装：登録と同時にログイン状態にする（トークンを返す）ことは未対応
-      # （doc/api/openapi.yaml「/auth/sign_up」）
+      # 登録と同時にログイン状態にする（doc/api-design.md「設計上の判断 7」）。会員と認証セッションは
+      # 1つのトランザクションで作り、会員だけが残ってログイン状態にならない、という状態を作らない
       def sign_up
         user = User.new(sign_up_params)
+        auth_session = User.transaction do
+          AuthSession.start_for(user) if user.save
+        end
 
-        if user.save
-          render json: UserSerializer.new(user).as_json, status: :created
+        if auth_session
+          render json: AuthTokensSerializer.new(auth_session).as_json, status: :created
         else
           render_validation_problem(user.errors)
         end
