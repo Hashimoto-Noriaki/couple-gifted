@@ -18,6 +18,8 @@ describe("safeReturnTo", () => {
     ["プロトコル相対URL", "//evil.example.com"],
     ["バックスラッシュで別ホストになる", "/\\evil.example.com"],
     ["タブを挟んで別ホストになる", "/\t/evil.example.com"],
+    ["..の正規化後に//始まりになる", "/a/..//evil.example.com"],
+    ["..の正規化後に/\\始まりになる", "/a/../\\evil.example.com"],
     ["javascript:スキーム", "javascript:alert(1)"],
     ["/始まりでない相対パス", "spots"],
     ["空文字", ""],

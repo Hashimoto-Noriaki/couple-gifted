@@ -21,5 +21,11 @@ export function safeReturnTo(value: unknown): string | null {
   if (url.origin !== BASE) {
     return null;
   }
-  return `${url.pathname}${url.search}${url.hash}`;
+  // 「/a/..//evil.com」のように、..の正規化後に「//evil.com」になる書き方がある。
+  // 返す文字列そのものをもう一度解決して、同じオリジンに留まるかを確かめる
+  const normalized = `${url.pathname}${url.search}${url.hash}`;
+  if (new URL(normalized, BASE).origin !== BASE) {
+    return null;
+  }
+  return normalized;
 }
