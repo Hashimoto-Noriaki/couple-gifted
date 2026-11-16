@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { SignInState } from "../actions";
 
 // 問い合わせ先は仮（doc/wireframes.md⑨）。決まるまではこの値を出し、本番運用（別リポジトリ）へ移る前に差し替える
@@ -24,6 +24,9 @@ const initialState: SignInState = { error: null, email: "" };
 
 export function LoginForm({ action, returnTo }: LoginFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  // メールアドレスは入力側で持つ（制御入力）。defaultValue={state.email}だと、送信後にフォームが
+  // リセットされたとき送信時点の値に戻り、応答待ちの間に直した内容が消えるため
+  const [email, setEmail] = useState(initialState.email);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -54,7 +57,8 @@ export function LoginForm({ action, returnTo }: LoginFormProps) {
           autoComplete="email"
           required
           // 失敗した後もメールアドレスは残す。パスワードは送信のたびに空に戻る
-          defaultValue={state.email}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="mt-2 w-full rounded-lg border border-zinc-200 px-4 py-3"
         />
       </div>
