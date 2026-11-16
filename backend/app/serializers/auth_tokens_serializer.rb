@@ -1,4 +1,4 @@
-# ログイン・トークン更新の結果（doc/api/openapi.yaml「AuthTokens」）。
+# 新規登録・ログイン・トークン更新の結果（doc/api/openapi.yaml「AuthTokens」）。
 # 平文のリフレッシュトークンは発行・入れ替えの直後にしか持てないため、その時点のAuthSessionを渡す
 class AuthTokensSerializer
   TOKEN_TYPE = "Bearer".freeze
