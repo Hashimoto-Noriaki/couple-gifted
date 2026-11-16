@@ -28,4 +28,70 @@
 - [Claude Codeの設定ガイド（CLAUDE.md・.claude/）](./doc/claude-code-guide.md)
 
 ## POC
+
 https://github.com/Hashimoto-Noriaki/couple-gifted-poc
+
+## ローカルでの起動方法（動作確認）
+
+backend（Rails API・3000番）→ frontend（Next.js・3001番）の順に起動する。
+
+### 1. backend（Docker）
+
+```bash
+# リポジトリルートで実行（初回・Gemfile変更時は --build を付ける）
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build
+
+# 起動完了を待つ：/up が200を返すまで待つ（serverはdb:prepareの完了後に起動するため、ここを抜ければテーブルができている）
+curl -o /dev/null --retry 60 --retry-delay 2 --retry-connrefused -fsS http://localhost:3000/up
+
+# 初回のみ：動作確認用のエリア・カテゴリ・スポットを投入
+docker compose exec api bin/rails db:seed
+```
+
+DBの作成・マイグレーションはコンテナ起動時に自動で行われる（`bin/rails db:prepare`）。
+
+- Swagger UI: http://localhost:3000/api-docs
+- ログを見る: `docker compose logs -f api`
+- 停止: `docker compose down`
+
+### 2. frontend（ホストで直接起動）
+
+```bash
+cd frontend
+pnpm install   # 初回・依存変更時のみ
+
+# 初回のみ：APIのベースURLを書く（Server Componentからだけ呼ぶため NEXT_PUBLIC_ は付けない）
+echo 'API_BASE_URL=http://localhost:3000/api/v1' > .env.local
+
+pnpm dev       # http://localhost:3001
+```
+
+- スポット一覧: http://localhost:3001/spots
+- ログイン: http://localhost:3001/login
+
+### ログインを試すには
+
+seedにはユーザーが入っていない（サインアップ画面も未実装）ので、先にAPIでユーザーを作る。
+Swagger UIの`POST /api/v1/auth/sign_up`から叩くか、以下を実行する。
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/sign_up \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"test@example.com","password":"password123","nickname":"テスト"}'
+```
+
+作ったメールアドレス・パスワードで http://localhost:3001/login からログインする。
+
+#### 停止中のアカウント（403）を試すには
+
+画面からは停止にできないので、Railsのコンソールから状態を変える。
+
+```bash
+# 停止にする
+docker compose exec api bin/rails runner 'User.find_by!(email: "test@example.com").suspended!'
+
+# 元に戻す
+docker compose exec api bin/rails runner 'User.find_by!(email: "test@example.com").active!'
+```
+
+停止中に正しいパスワードでログインすると、「このアカウントは停止されています」と問い合わせ先が表示される。

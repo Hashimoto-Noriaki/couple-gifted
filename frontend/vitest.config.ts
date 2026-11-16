@@ -11,6 +11,10 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  // tsconfig.jsonのpaths（"@/*"）と合わせる
+  resolve: {
+    alias: { "@": dirname },
+  },
   test: {
     projects: [
       {

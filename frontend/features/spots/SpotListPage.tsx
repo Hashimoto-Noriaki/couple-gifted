@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { Header } from "@/shared/components/Header";
 import { listAreas, listCategories, listSpotPages } from "./api";
 import { FilterSheet } from "./components/FilterSheet";
-import { Header } from "./components/Header";
 import { SpotCard } from "./components/SpotCard";
 import {
   groupAreas,

@@ -106,9 +106,9 @@ export interface paths {
         /**
          * 新規登録する
          * @description 会員を新しく作る（doc/use-cases.md「新規登録する」）。
-         *     ⚠️未実装：ログイン状態にするためのトークン発行は、ログイン（/auth/sign_in）・
-         *     トークン更新（/auth/refresh）の実装時に方式を決めて追加する（doc/requirements.md 決定事項ログ #30）。
-         *     現時点では作成した会員の情報だけを返す。
+         *     ⚠️未実装：登録と同時にログイン状態にする（トークンを返す）ことは未対応。
+         *     トークン方式は決定済み（doc/requirements.md 決定事項ログ #30、/auth/sign_in と同じ AuthTokens）だが、
+         *     このエンドポイントは現時点では作成した会員の情報だけを返す。
          *
          *     利用規約への同意はクライアント側で必須にする（同意がないと登録ボタンを押せない）。
          *
@@ -117,6 +117,87 @@ export interface paths {
          */
         post: operations["signUp"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign_in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * ログインする
+         * @description メールアドレスとパスワードを確かめ、アクセストークンとリフレッシュトークンを返す
+         *     （doc/use-cases.md「ログインする」）。ログインのたびに新しい認証セッションを作る
+         *     （端末ごとに別のトークンになる）。
+         *
+         *     失敗の理由は区別しない。メールアドレスが無い・パスワードが違う・退会済み・項目の欠けの
+         *     どれでも、同じ 401（type=.../errors/invalid-credentials）を返す。メールアドレスが
+         *     登録済みかどうかを外部から判定させないため（doc/api-design.md「設計上の判断 7」）。
+         *
+         *     停止中の会員だけは、パスワードまで正しい場合に限り 403（type=.../errors/account-suspended）を返す
+         *     （停止されていることを本人に伝える。本人以外には伝わらない）。
+         *
+         *     ⚠️未実装：連続して失敗した場合の試行制限（doc/use-cases.md「ログインする」例外フロー、issue #111）。
+         */
+        post: operations["signIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * トークンを更新する
+         * @description リフレッシュトークンを渡し、新しいアクセストークンとリフレッシュトークンをもらう。
+         *     渡したリフレッシュトークンはこの時点で使えなくなる（使うたびに入れ替わる）。
+         *
+         *     リフレッシュトークンが無い・誤り・期限切れ・使用済み、または会員が停止・退会済みの場合は
+         *     401（type=.../errors/unauthenticated）を返す。この場合はログインし直す。
+         *
+         *     使用済み（入れ替え済み）のリフレッシュトークンが再び使われた場合は、盗まれたとみなして
+         *     そのログイン（認証セッション）ごと失効させる。入れ替え後のトークンも使えなくなる。
+         *     クライアントは同じリフレッシュトークンで更新を並行して送らないこと。
+         */
+        post: operations["refreshToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign_out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * ログアウトする
+         * @description いまのアクセストークンが属する認証セッションを消す（doc/use-cases.md「ログアウトする」）。
+         *     そのセッションのアクセストークン・リフレッシュトークンは2本とも使えなくなる。
+         *     他の端末のログインには影響しない。
+         */
+        delete: operations["signOut"];
         options?: never;
         head?: never;
         patch?: never;
@@ -201,6 +282,30 @@ export interface components {
             password: string;
             nickname: string;
         };
+        SignInRequest: {
+            /** @description 大文字小文字・前後の空白の違いは無視して照合する */
+            email: string;
+            /** Format: password */
+            password: string;
+        };
+        RefreshTokenRequest: {
+            refresh_token: string;
+        };
+        /**
+         * @description ログイン・トークン更新の結果。refresh_token はこのレスポンスでしか受け取れない
+         *     （サーバはダイジェストしか保持しない）。
+         */
+        AuthTokens: {
+            /** @description 会員限定の窓口に Authorization ヘッダで付ける */
+            access_token: string;
+            /** @description /auth/refresh に渡す。有効期限30日。使うたびに入れ替わる */
+            refresh_token: string;
+            /** @enum {string} */
+            token_type: "Bearer";
+            /** @description access_token の有効期間（秒） */
+            expires_in: number;
+            user: components["schemas"]["User"];
+        };
         /** @description 会員の情報。パスワード（password_digest）・状態（status）は返さない。 */
         User: {
             /** Format: uuid */
@@ -265,6 +370,28 @@ export interface components {
             };
             content: {
                 "application/problem+json": components["schemas"]["ValidationProblem"];
+            };
+        };
+        /**
+         * @description 認証できない。ログイン失敗（invalid-credentials）、またはトークンが無い・誤り・期限切れ・
+         *     失効済み（unauthenticated）。WWW-Authenticate: Bearer を付ける
+         */
+        Unauthorized: {
+            headers: {
+                "WWW-Authenticate"?: string;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description 認証はできたが、許可されていない（停止中の会員のログイン：account-suspended） */
+        Forbidden: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
             };
         };
         /** @description 対象が存在しない */
@@ -413,6 +540,76 @@ export interface operations {
                 };
             };
             422: components["responses"]["UnprocessableEntity"];
+        };
+    };
+    signIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignInRequest"];
+            };
+        };
+        responses: {
+            /** @description ログインできた */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokens"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
+    refreshToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshTokenRequest"];
+            };
+        };
+        responses: {
+            /** @description 更新できた */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokens"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    signOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ログアウトできた */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
         };
     };
 }
