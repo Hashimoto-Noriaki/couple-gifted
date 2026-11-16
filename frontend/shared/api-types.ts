@@ -105,10 +105,10 @@ export interface paths {
         put?: never;
         /**
          * 新規登録する
-         * @description 会員を新しく作る（doc/use-cases.md「新規登録する」）。
-         *     ⚠️未実装：登録と同時にログイン状態にする（トークンを返す）ことは未対応。
-         *     トークン方式は決定済み（doc/requirements.md 決定事項ログ #30、/auth/sign_in と同じ AuthTokens）だが、
-         *     このエンドポイントは現時点では作成した会員の情報だけを返す。
+         * @description 会員を新しく作り、そのままログイン状態にする（doc/use-cases.md「新規登録する」）。
+         *     会員と同時に認証セッションを作り、/auth/sign_in と同じ AuthTokens を返す
+         *     （doc/api-design.md「設計上の判断 7」）。会員の作成と認証セッションの作成は1つのトランザクションで行い、
+         *     422のときはどちらも作らない。
          *
          *     利用規約への同意はクライアント側で必須にする（同意がないと登録ボタンを押せない）。
          *
@@ -292,7 +292,7 @@ export interface components {
             refresh_token: string;
         };
         /**
-         * @description ログイン・トークン更新の結果。refresh_token はこのレスポンスでしか受け取れない
+         * @description 新規登録・ログイン・トークン更新の結果。refresh_token はこのレスポンスでしか受け取れない
          *     （サーバはダイジェストしか保持しない）。
          */
         AuthTokens: {
@@ -530,13 +530,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 登録できた */
+            /** @description 登録できた（そのままログイン状態になる） */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/json": components["schemas"]["AuthTokens"];
                 };
             };
             422: components["responses"]["UnprocessableEntity"];
