@@ -37,15 +37,22 @@ RSpec.describe "POST /api/v1/auth/sign_up", type: :request do
     expect(AuthSession.find_by_refresh_token(body["refresh_token"])).to eq(session)
   end
 
-  it "返したトークンで、そのままトークンの更新・ログアウトができる" do
+  it "返したアクセストークンで、更新を挟まずにそのままログアウトでき、認証セッションが消える" do
     sign_up(valid_params)
-    body = response.parsed_body
+    access_token = response.parsed_body["access_token"]
 
-    post "/api/v1/auth/refresh", params: { refresh_token: body["refresh_token"] }, as: :json
-    expect(response).to have_http_status(:ok)
-
-    delete "/api/v1/auth/sign_out", headers: { "Authorization" => "Bearer #{body["access_token"]}" }, as: :json
+    expect {
+      delete "/api/v1/auth/sign_out", headers: { "Authorization" => "Bearer #{access_token}" }, as: :json
+    }.to change(AuthSession, :count).by(-1)
     expect(response).to have_http_status(:no_content)
+  end
+
+  it "返したリフレッシュトークンで、そのままトークンを更新できる" do
+    sign_up(valid_params)
+    refresh_token = response.parsed_body["refresh_token"]
+
+    post "/api/v1/auth/refresh", params: { refresh_token: refresh_token }, as: :json
+    expect(response).to have_http_status(:ok)
   end
 
   it "パスワードを平文で返さない・保存しない" do
@@ -61,6 +68,14 @@ RSpec.describe "POST /api/v1/auth/sign_up", type: :request do
     allow(AuthSession).to receive(:start_for).and_raise(ActiveRecord::ActiveRecordError, "認証セッションを作れなかった")
 
     expect { sign_up(valid_params) }.to raise_error(ActiveRecord::ActiveRecordError)
+    expect(User.exists?(email: "hanako@example.com")).to be(false)
+  end
+
+  it "認証セッション側の一意制約違反は、メールアドレスの重複（422 taken）として返さない" do
+    # メールアドレスは重複していないのに「使われています」と伝えてしまわないため。想定外の失敗として扱う
+    allow(AuthSession).to receive(:start_for).and_raise(ActiveRecord::RecordNotUnique)
+
+    expect { sign_up(valid_params) }.to raise_error(ActiveRecord::RecordNotUnique)
     expect(User.exists?(email: "hanako@example.com")).to be(false)
   end
 
