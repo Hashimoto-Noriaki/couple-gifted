@@ -11,8 +11,10 @@ module Api
       # 1つのトランザクションで作り、会員だけが残ってログイン状態にならない、という状態を作らない
       def sign_up
         user = User.new(sign_up_params)
+        user_saved = false
         auth_session = User.transaction do
-          AuthSession.start_for(user) if user.save
+          user_saved = user.save
+          AuthSession.start_for(user) if user_saved
         end
 
         if auth_session
@@ -21,6 +23,10 @@ module Api
           render_validation_problem(user.errors)
         end
       rescue ActiveRecord::RecordNotUnique
+        # 会員を保存できた後（認証セッションの作成中）の一意制約違反は、メールアドレスの重複ではない。
+        # 「使われています」と伝えないよう、想定外の失敗としてそのまま上げる
+        raise if user_saved
+
         # 一意性のバリデーション通過後、INSERTの時点で同じメールアドレスの登録に先を越された場合。
         # usersの一意制約はemailのみのため、通常の重複と同じ応答にする
         user.errors.add(:email, :taken)
