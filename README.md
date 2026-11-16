@@ -41,13 +41,15 @@ backend（Rails API・3000番）→ frontend（Next.js・3001番）の順に起�
 # リポジトリルートで実行（初回・Gemfile変更時は --build を付ける）
 HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build
 
+# 起動完了を待つ：/up が200を返すまで待つ（serverはdb:prepareの完了後に起動するため、ここを抜ければテーブルができている）
+curl -o /dev/null --retry 60 --retry-delay 2 --retry-connrefused -fsS http://localhost:3000/up
+
 # 初回のみ：動作確認用のエリア・カテゴリ・スポットを投入
 docker compose exec api bin/rails db:seed
 ```
 
 DBの作成・マイグレーションはコンテナ起動時に自動で行われる（`bin/rails db:prepare`）。
 
-- 起動確認: http://localhost:3000/up（緑の画面が出ればOK）
 - Swagger UI: http://localhost:3000/api-docs
 - ログを見る: `docker compose logs -f api`
 - 停止: `docker compose down`
