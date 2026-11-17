@@ -43,5 +43,7 @@ EXPOSE 3000
 # bundle_cache（named volume）は古いgemを保持したままイメージに上書きされないため、
 # 起動のたびにbundle checkで確認し、Gemfile.lock変更時はbundle installし直す
 # （bin/setupの"bundle check || bundle install"と同じパターン）。
-# その後DBが無ければ作成・マイグレーションしてから起動する
-CMD ["sh", "-c", "(bundle check || bundle install) && bin/rails db:prepare && exec bin/rails server -b 0.0.0.0 -p 3000"]
+# その後DBが無ければ作成・マイグレーションしてから起動する。
+# ./backend:/rails をbind mountしているため、前回のserver.pidがホスト側に残ると
+# Pumaが「A server is already running」で終了する。起動前に消しておく
+CMD ["sh", "-c", "(bundle check || bundle install) && bin/rails db:prepare && rm -f tmp/pids/server.pid && exec bin/rails server -b 0.0.0.0 -p 3000"]
