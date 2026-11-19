@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { signIn } from "./api";
+import { signIn, signUp } from "./api";
 
 const tokens = {
   access_token: "access",
@@ -85,5 +85,66 @@ describe("signIn", () => {
     await expect(
       signIn({ email: "a@example.com", password: "x" }),
     ).rejects.toThrow("500");
+  });
+});
+
+describe("signUp", () => {
+  const fetchMock = vi.fn<typeof fetch>();
+  const body = {
+    email: "hanako@example.com",
+    password: "password",
+    nickname: "はなこ",
+  };
+
+  beforeEach(() => {
+    vi.stubEnv("API_BASE_URL", "http://api.test");
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    fetchMock.mockReset();
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("メールアドレス・パスワード・ニックネームをJSONでPOSTし、トークンを返す", async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify(tokens), { status: 201 }),
+    );
+
+    expect(await signUp(body)).toEqual({ ok: true, tokens });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("http://api.test/auth/sign_up");
+    expect(init?.method).toBe("POST");
+    expect(JSON.parse(String(init?.body))).toEqual(body);
+  });
+
+  it("422なら項目ごとのエラーコードを返す", async () => {
+    const errors = [
+      { field: "email", code: "taken" },
+      { field: "password", code: "too_short" },
+    ];
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          type: "about:blank",
+          title: "",
+          status: 422,
+          errors,
+        }),
+        {
+          status: 422,
+          headers: { "Content-Type": "application/problem+json" },
+        },
+      ),
+    );
+
+    expect(await signUp(body)).toEqual({ ok: false, errors });
+  });
+
+  it("想定外のステータスは例外にする", async () => {
+    fetchMock.mockResolvedValueOnce(problem(500));
+
+    await expect(signUp(body)).rejects.toThrow("500");
   });
 });
