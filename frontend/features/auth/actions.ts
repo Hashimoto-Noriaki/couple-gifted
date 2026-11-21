@@ -2,7 +2,13 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { type AuthTokens, type SignInFailure, signIn } from "./api";
+import {
+  type AuthTokens,
+  type SignInFailure,
+  signIn,
+  signUp,
+  type ValidationError,
+} from "./api";
 import { DEFAULT_RETURN_TO, safeReturnTo } from "./lib/returnTo";
 
 // "use server"のファイルからはasync関数しかexportできないため、定数はexportしない
@@ -18,6 +24,15 @@ export type SignInState = {
   error: SignInFailure | "unavailable" | null;
   // 失敗した後もメールアドレスは入力欄に残す（パスワードは残さない）
   email: string;
+};
+
+export type SignUpState = {
+  // 422の項目ごとのエラー。unavailableはAPIが想定外の応答をした・届かなかった
+  errors: ValidationError[];
+  unavailable: boolean;
+  // 失敗した後もメールアドレス・ニックネームは入力欄に残す（パスワードは残さない）
+  email: string;
+  nickname: string;
 };
 
 // トークンはブラウザのJavaScriptから読めないhttpOnly Cookieに置く（.claude/rules/frontend.md「認証」）
@@ -60,4 +75,27 @@ export async function signInAction(
   await saveTokens(result.tokens);
   // redirectは例外を投げて遷移させるため、try/catchの外で呼ぶ（Next.jsのredirectのドキュメント）
   redirect(safeReturnTo(formData.get("return_to")) ?? DEFAULT_RETURN_TO);
+}
+
+export async function signUpAction(
+  _prev: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  const email = String(formData.get("email") ?? "");
+  const password = String(formData.get("password") ?? "");
+  const nickname = String(formData.get("nickname") ?? "");
+
+  let result: Awaited<ReturnType<typeof signUp>>;
+  try {
+    result = await signUp({ email, password, nickname });
+  } catch {
+    return { errors: [], unavailable: true, email, nickname };
+  }
+  if (!result.ok) {
+    return { errors: result.errors, unavailable: false, email, nickname };
+  }
+
+  await saveTokens(result.tokens);
+  // return_toがあってもトップへ（doc/use-cases.md「新規登録する」基本フロー7、.claude/rules/frontend.md「認証」）
+  redirect(DEFAULT_RETURN_TO);
 }
