@@ -46,10 +46,9 @@ pnpm --dir frontend test
 
 **報告のみ。自動修正しない。** `rubocop -a`・`pnpm check:fix`・`bundle update` などの修正コマンドは実行せず、コードも編集しない（unsafe な修正は人が確認するルールのため。`.claude/rules/backend.md` 参照）。
 
-次の2つはコードが原因ではないことがあるので、報告に添える。
+次はコードが原因ではないことがあるので、報告に添える。
 
 - `bin/bundler-audit` の失敗：脆弱性DBの更新で、変更と無関係に落ちることがある
-- `bin/brakeman` の exit code 5（`Brakeman X is not the latest version Y`）：`--ensure-latest` によるもの。対処は `.claude/rules/backend.md` の「つまずきやすい点」参照
 
 ## 報告フォーマット
 

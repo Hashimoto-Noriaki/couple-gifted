@@ -9,7 +9,7 @@
 # - コミット・PRタイトルは .claude/rules/git.md の規則に揃えて `chore:` にする
 version: 2
 updates:
-  # backend の gem（Brakeman を含む。bin/brakeman が --ensure-latest 付きのため、新版が出ると CI が落ちる）
+  # backend の gem（Brakeman を含む。bin/brakeman は --ensure-latest を外しているため、Brakeman の新版はこの更新PRで上げる）
   - package-ecosystem: "bundler"
     directory: "/backend"
     schedule:
