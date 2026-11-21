@@ -39,8 +39,14 @@ export function SignUpForm({ action }: SignUpFormProps) {
   // 送信後にフォームがリセットされても、応答待ちの間に直した内容を消さないため
   const [email, setEmail] = useState(initialState.email);
   const [nickname, setNickname] = useState(initialState.nickname);
-  // 規約への同意はAPIに送らない。同意が無いと登録ボタンを押せないようにするだけ（doc/api/openapi.yaml /auth/sign_up）
-  const [agreed, setAgreed] = useState(false);
+  // 規約への同意はAPIに送らない。同意が無いと登録ボタンを押せないようにするだけ（doc/api/openapi.yaml /auth/sign_up）。
+  // 送信後にフォームがリセットされるとチェックボックスは外れるため、同意は「どの送信結果の画面で入れたか」と組で持ち、
+  // 結果が変わったら同意も外れたものとして扱う（チェックが外れて見えるのに登録ボタンを押せる状態にしない）
+  const [agreement, setAgreement] = useState({
+    state: initialState,
+    agreed: false,
+  });
+  const agreed = agreement.state === state && agreement.agreed;
   const messages = signUpErrorMessages(state.errors);
 
   return (
@@ -119,7 +125,7 @@ export function SignUpForm({ action }: SignUpFormProps) {
         <input
           type="checkbox"
           checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
+          onChange={(e) => setAgreement({ state, agreed: e.target.checked })}
           className="mt-1"
         />
         <span>利用規約・プライバシーポリシーに同意する</span>

@@ -68,6 +68,13 @@ export const EmailTaken: Story = {
     );
     await expect(canvas.getByLabelText("ニックネーム")).toHaveValue("はなこ");
     await expect(canvas.getByLabelText("パスワード")).toHaveValue("");
+    // フォームのリセットで外れた同意に合わせて、登録ボタンも押せなくなる
+    await expect(
+      canvas.getByLabelText("利用規約・プライバシーポリシーに同意する"),
+    ).not.toBeChecked();
+    await expect(
+      canvas.getByRole("button", { name: "登録する" }),
+    ).toBeDisabled();
   },
 };
 
