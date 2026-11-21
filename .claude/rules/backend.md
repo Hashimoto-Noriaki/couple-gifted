@@ -117,8 +117,9 @@ gemを追加・更新するときは手元でも実行する。
   （`Committee::OpenAPI3Unsupported`で例外になる）ため
 - `doc/`はコンテナ内で`/doc`（`/rails`ではなくコンテナルート直下、read-only）。`Rails.root.join('..', 'doc', ...)`で参照する
   （`docker-compose.yml`の`./doc:/doc:ro`マウント、`spec/rails_helper.rb`の`committee_options`参照）
-- CIの`scan_ruby`が`Brakeman X is not the latest version Y`（exit code 5）で落ちる場合、コードの問題ではない。
-  `bin/brakeman`が`--ensure-latest`付きのため、Brakemanの新バージョンがリリースされた時点で落ちる。
-  `docker compose exec api bundle update brakeman`で`Gemfile.lock`を更新し、`chore:`のPRにする（例：PR #69）。
-  `--ensure-latest`は外さない（スキャナが古いまま動き続けるため）。Dependabot（`.github/dependabot.yml`）が
-  週1回で更新PRを作るので、通常はそれをマージすれば落ちる前に上がる
+- `bin/brakeman`から、Railsが生成時に付ける`--ensure-latest`を外している。付けたままだと、Brakemanの新バージョンが
+  リリースされた時点で、PRの変更と無関係に`scan_ruby`が落ちる（exit code 5）ため。CIが落ちるのはPRの変更が原因の
+  ときだけにする（`bin/bundler-audit`を`ci.yml`から分離したのと同じ考え方）。
+  Brakemanの版は`Gemfile.lock`で固定し、新しい版はDependabot（`.github/dependabot.yml`）の週1回の更新PRで上げる。
+  古い版で動くのは最長でも1週間程度。すぐに上げたいときは`docker compose exec api bundle update brakeman`で
+  `Gemfile.lock`を更新し、`chore:`のPRにする
