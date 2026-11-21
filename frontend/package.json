@@ -20,7 +20,7 @@
     "api-types:generate": "openapi-typescript ../doc/api/openapi.yaml -o shared/api-types.ts"
   },
   "dependencies": {
-    "next": "16.4.3",
+    "next": "16.4.5",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
@@ -51,6 +51,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^8.3.5",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
