@@ -147,4 +147,24 @@ describe("signUp", () => {
 
     await expect(signUp(body)).rejects.toThrow("500");
   });
+
+  it.each([
+    ["errorsが無い", {}],
+    ["errorsが配列でない", { errors: "invalid" }],
+    ["errorsが空", { errors: [] }],
+  ])("422でも%sなら例外にする", async (_label, extra) => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          type: "about:blank",
+          title: "",
+          status: 422,
+          ...extra,
+        }),
+        { status: 422 },
+      ),
+    );
+
+    await expect(signUp(body)).rejects.toThrow("422");
+  });
 });

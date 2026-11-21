@@ -62,8 +62,14 @@ export async function signUp(body: SignUpRequest): Promise<SignUpResult> {
     return { ok: true, tokens: (await res.json()) as AuthTokens };
   }
   if (res.status === 422) {
-    const problem =
-      (await res.json()) as components["schemas"]["ValidationProblem"];
+    const problem = (await res.json()) as Partial<
+      components["schemas"]["ValidationProblem"]
+    >;
+    // 項目ごとのエラーが無い422は、どこを直せばよいか画面で伝えられないため、想定外として扱う
+    // （APIの手前のプロキシ等が返した422や、契約と違う応答を画面の描画中の例外にしない）
+    if (!Array.isArray(problem.errors) || problem.errors.length === 0) {
+      throw new Error("POST /auth/sign_up の422に項目ごとのエラーがありません");
+    }
     return { ok: false, errors: problem.errors };
   }
   throw new Error(`POST /auth/sign_up が失敗しました（${res.status}）`);
