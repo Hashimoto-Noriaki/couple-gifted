@@ -47,6 +47,11 @@ export const Default: Story = {
     const canvas = within(canvasElement);
     const button = canvas.getByRole("button", { name: "登録する" });
     await expect(button).toBeDisabled();
+    // 8文字未満はブラウザで止める
+    await expect(canvas.getByLabelText("パスワード")).toHaveAttribute(
+      "minlength",
+      "8",
+    );
     await userEvent.click(
       canvas.getByLabelText("利用規約・プライバシーポリシーに同意する"),
     );
@@ -59,9 +64,10 @@ export const EmailTaken: Story = {
   args: { action: returns([{ field: "email", code: "taken" }]) },
   play: async ({ canvasElement }) => {
     const canvas = await submit(canvasElement);
-    await expect(
-      await canvas.findByText("このメールアドレスは既に使われています"),
-    ).toBeInTheDocument();
+    // 入力欄の下の文言も読み上げられるよう、alertとして出す
+    await expect(await canvas.findByRole("alert")).toHaveTextContent(
+      "このメールアドレスは既に使われています",
+    );
     // メールアドレス・ニックネームは残し、パスワードは消す
     await expect(canvas.getByLabelText("メールアドレス")).toHaveValue(
       "hanako@example.com",

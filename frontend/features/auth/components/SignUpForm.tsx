@@ -27,7 +27,8 @@ function FieldError({
 }) {
   if (!message) return null;
   return (
-    <p id={`${field}-error`} className="mt-1 text-red-600 text-sm">
+    // 入力欄の下に出す文言は読み上げの領域（aria-live）の外にあるため、role="alert"で現れたときに読み上げさせる
+    <p id={`${field}-error`} role="alert" className="mt-1 text-red-600 text-sm">
       {message}
     </p>
   );
@@ -40,7 +41,8 @@ export function SignUpForm({ action }: SignUpFormProps) {
   const [email, setEmail] = useState(initialState.email);
   const [nickname, setNickname] = useState(initialState.nickname);
   // 規約への同意はAPIに送らない。同意が無いと登録ボタンを押せないようにするだけ（doc/api/openapi.yaml /auth/sign_up）。
-  // 送信後にフォームがリセットされるとチェックボックスは外れるため、同意は「どの送信結果の画面で入れたか」と組で持ち、
+  // 送信に失敗して戻ったら、同意は入れ直してもらう（.claude/rules/frontend.md「認証」）。パスワードも入れ直すため。
+  // 送信後にフォームがリセットされるとチェックボックスは外れるので、同意は「どの送信結果の画面で入れたか」と組で持ち、
   // 結果が変わったら同意も外れたものとして扱う（チェックが外れて見えるのに登録ボタンを押せる状態にしない）
   const [agreement, setAgreement] = useState({
     state: initialState,
@@ -93,6 +95,8 @@ export function SignUpForm({ action }: SignUpFormProps) {
           type="password"
           autoComplete="new-password"
           required
+          // 8文字未満はAPIに送る前にブラウザで止める（送ると、パスワードと同意を入れ直すことになるため）
+          minLength={8}
           // エラーで戻ったときパスワードは消す（送信のたびに空に戻る）
           aria-invalid={messages.password ? true : undefined}
           aria-describedby={
