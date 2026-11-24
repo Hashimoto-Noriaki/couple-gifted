@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { signInAction } from "./actions";
-import { signIn } from "./api";
+import { signInAction, signUpAction } from "./actions";
+import { signIn, signUp } from "./api";
 
 vi.mock("next/headers");
 vi.mock("next/navigation");
@@ -144,6 +144,90 @@ describe("signInAction", () => {
     expect(state).toEqual({
       error: "unavailable",
       email: "hanako@example.com",
+    });
+    expect(set).not.toHaveBeenCalled();
+  });
+});
+
+describe("signUpAction", () => {
+  const set = vi.fn();
+  const initialSignUpState = {
+    errors: [],
+    unavailable: false,
+    email: "",
+    nickname: "",
+  };
+  const fields = {
+    email: "hanako@example.com",
+    password: "password",
+    nickname: "はなこ",
+  };
+
+  beforeEach(() => {
+    vi.mocked(cookies).mockResolvedValue({ set } as never);
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  describe("登録に成功したとき", () => {
+    beforeEach(() => {
+      vi.mocked(signUp).mockResolvedValue({ ok: true, tokens });
+    });
+
+    it("入力値をAPIに渡し、2つのトークンをCookieに保存する", async () => {
+      await signUpAction(initialSignUpState, form(fields));
+
+      expect(signUp).toHaveBeenCalledWith(fields);
+      expect(set).toHaveBeenCalledWith(
+        "access_token",
+        "access",
+        expect.objectContaining({ httpOnly: true, maxAge: 900 }),
+      );
+      expect(set).toHaveBeenCalledWith(
+        "refresh_token",
+        "refresh",
+        expect.objectContaining({ httpOnly: true, maxAge: 30 * 24 * 60 * 60 }),
+      );
+    });
+
+    it("戻り先があっても、トップ（スポット一覧）へ", async () => {
+      await signUpAction(
+        initialSignUpState,
+        form({ ...fields, return_to: "/spots/s1" }),
+      );
+
+      expect(redirect).toHaveBeenCalledWith("/spots");
+    });
+  });
+
+  it("422なら、Cookieを保存せずエラーとメールアドレス・ニックネームを返す", async () => {
+    const errors = [{ field: "email", code: "taken" }];
+    vi.mocked(signUp).mockResolvedValue({ ok: false, errors });
+
+    const state = await signUpAction(initialSignUpState, form(fields));
+
+    expect(state).toEqual({
+      errors,
+      unavailable: false,
+      email: "hanako@example.com",
+      nickname: "はなこ",
+    });
+    expect(set).not.toHaveBeenCalled();
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it("APIが想定外の応答をしたら、unavailableを返す", async () => {
+    vi.mocked(signUp).mockRejectedValue(new Error("500"));
+
+    const state = await signUpAction(initialSignUpState, form(fields));
+
+    expect(state).toEqual({
+      errors: [],
+      unavailable: true,
+      email: "hanako@example.com",
+      nickname: "はなこ",
     });
     expect(set).not.toHaveBeenCalled();
   });

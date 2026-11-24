@@ -62,7 +62,7 @@ frontend/
 - Next.js自体が別DB（セッション・BFFキャッシュ等）を持つかどうかも未確定。下記「認証」のCookie以外に、フロント側のセッション管理層を先回りして作らない
 - 複数featureで使う部品は`shared/components/`に置く（例：`Header`。spotsとauthで使う）
 
-## 認証（#114で決定）
+## 認証（#114・#115で決定）
 
 - **トークンはServer ActionからNext.jsの`cookies()`でhttpOnly Cookieに保存する**。ブラウザのJavaScriptから読めないようにするため、`localStorage`等には置かない
   - Cookie名は`access_token`・`refresh_token`。`httpOnly`・`SameSite=Lax`・`path=/`。`Secure`は本番（`NODE_ENV=production`）だけ付ける（`http://localhost`でSafari等が保存しないため）
@@ -70,7 +70,12 @@ frontend/
   - 有効期限（`maxAge`）はトークンに合わせる。アクセストークンはレスポンスの`expires_in`（15分）、リフレッシュトークンは30日（APIのレスポンスに無いため`features/auth/actions.ts`の定数）
 - **ログイン後の戻り先はURLで渡す**：`/login?return_to=/spots/xxx`。オープンリダイレクトを防ぐため、`features/auth/lib/returnTo.ts`の`safeReturnTo`を通したものだけを使う（`/`始まりで、URLとして解決しても同じオリジンに留まるもの。`//evil.com`・`/\evil.com`等は弾く）。戻り先が無い・弾いたときはトップ（`/spots`）へ
 - **割り込みの理由もURLで渡す**：`/login?return_to=...&reason=save`。`reason`は`features/auth/lib/loginReason.ts`に定義したキーだけを受け付け、画面の説明文に変換する（任意の文言を画面に出させない）。理由が無ければ「ログインしてください」
-- 新規登録への導線は`/signup`。ログイン画面で受け取った`return_to`・`reason`を引き継ぐ（新規登録画面は#115）
+- 新規登録への導線は`/signup`。ログイン画面で受け取った`return_to`・`reason`を引き継ぐ
+- **新規登録の後は、`return_to`があってもトップ（`/spots`）へ遷移する**（#115で決定。`doc/use-cases.md`「新規登録する」の基本フロー7）。`/signup`が`return_to`・`reason`を受け取るのは、「アカウントをお持ちの方」でログイン画面へ戻るときに引き継ぐためだけ
+- **新規登録画面の利用規約・プライバシーポリシーは、同意のチェックボックスと文言だけを置き、リンクは置かない**。本文が未作成のため（`doc/requirements.md`未決事項 #5、Week 10）。本文ができたらリンクを足す
+- **入力エラーで戻ったとき、パスワードは消す**（メールアドレス・ニックネームは残す）。ログイン画面と同じ扱い
+- **送信に失敗して戻ったとき、規約への同意も外れる**（入れ直してもらう）。パスワードもどのみち入れ直すため。React 19はformのaction後にフォームをリセットしてチェックボックスが外れるので、表示と登録ボタンの状態を食い違わせないようにこう決めた
+- **パスワードの条件は「8文字以上」だけを表示する**。上限（UTF-8で72バイト）は、超えたときのエラー（`too_long`）の文言で伝える
 
 ## コンポーネント設計
 
