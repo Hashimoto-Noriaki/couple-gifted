@@ -54,6 +54,18 @@ DBの作成・マイグレーションはコンテナ起動時に自動で行わ
 - ログを見る: `docker compose logs -f api`
 - 停止: `docker compose down`
 
+#### テストを実行するには
+
+```bash
+# apiコンテナが起動中
+docker compose exec api bundle exec rspec
+
+# 起動していないとき（使い捨てのコンテナでコマンドだけを実行する）
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose run --rm api bundle exec rspec
+```
+
+`run --rm` はRailsサーバーを起動しないため、APIを叩く確認（Swagger UI・フロントからのログイン等）には `up -d` で起動しておく必要がある。
+
 ### 2. frontend（ホストで直接起動）
 
 ```bash

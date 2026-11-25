@@ -87,6 +87,7 @@ HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build  # 起動（初
 docker compose exec api bash                  # コンテナに入る
 docker compose exec api bin/rails db:migrate
 docker compose exec api bundle exec rspec
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose run --rm api bundle exec rspec  # サーバーを起動せずに実行（apiが止まっているとき）
 docker compose exec api bin/rails console
 docker compose logs -f api
 docker compose down
