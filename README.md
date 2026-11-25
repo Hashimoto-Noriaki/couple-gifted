@@ -54,7 +54,7 @@ DBの作成・マイグレーションはコンテナ起動時に自動で行わ
 - ログを見る: `docker compose logs -f api`
 - 停止: `docker compose down`
 
-### テストを実行するには
+#### テストを実行するには
 
 ```bash
 # apiコンテナが起動中
