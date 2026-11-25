@@ -32,7 +32,10 @@ docker compose exec api bin/rubocop
 docker compose exec api bundle exec rspec
 ```
 
-先に `docker compose ps` で `api` が起動しているか確認する。起動していなければ backend は実行せず、「未実行」として起動コマンド（`HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build`）を案内する。コンテナを勝手に起動しない。
+先に `docker compose ps` で `api` が起動しているか確認する。起動していなければ backend は実行せず、「未実行」として次のどちらかを案内する。コンテナを勝手に起動しない。
+
+- サーバーを起動せずにチェックだけ流す：上の各コマンドの `docker compose exec api` を `HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose run --rm api` に置き換えて実行する（使い捨てのコンテナで実行し、終わると消える）
+- apiを起動してから `/ci-check` をやり直す：`HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up -d --build`
 
 ### frontend
 
